@@ -28,7 +28,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        eTemail = findViewById(R.id.email1);
+        eTemail = findViewById(R.id.bname);
         eTpass = findViewById(R.id.password);
         stayco = findViewById(R.id.checkBox);
         bt1 = findViewById(R.id.button1);
@@ -40,6 +40,9 @@ public class Login extends AppCompatActivity {
     public void log(View view) {
         email1 = eTemail.getText().toString();
         password1 = eTpass.getText().toString();
+        if(email1.isEmpty()||password1.isEmpty()){
+            Toast.makeText(Login.this,"please enter fileds<3",Toast.LENGTH_SHORT).show();
+        }
         mAuth.signInWithEmailAndPassword(email1, password1)
                 .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
                     @Override

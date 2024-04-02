@@ -6,6 +6,7 @@ import static com.example.beta1.DBref.refUsers;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -30,7 +31,7 @@ import com.google.firebase.database.ValueEventListener;
          setContentView(R.layout.activity_main);
          cB2 = findViewById(R.id.cB2);
          name1 = findViewById(R.id.name1);
-         email1 = findViewById(R.id.email1);
+         email1 = findViewById(R.id.bname);
          phone1 = findViewById(R.id.phone1);
 
 
@@ -78,7 +79,10 @@ import com.google.firebase.database.ValueEventListener;
                  }
              });
          }}
-
+public void toedit(View view){
+    Intent intent = new Intent(MainActivity.this, BusinessEditing.class);
+    startActivity(intent);
+}
 
      public void pressed(View view) {
          if (!cB2.isChecked()){

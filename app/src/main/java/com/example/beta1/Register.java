@@ -43,7 +43,7 @@ public class Register extends AppCompatActivity {
         client = findViewById(R.id.client);
         mOrC = "C";
          eTname = findViewById(R.id.name);
-         eTemail = findViewById(R.id.email1);
+         eTemail = findViewById(R.id.bname);
          eTpass = findViewById(R.id.password);
          eTphone = findViewById(R.id.phone);
          bt1 = findViewById(R.id.button1);
@@ -62,6 +62,18 @@ public class Register extends AppCompatActivity {
         password = String.valueOf(eTpass.getText());
         name=eTname.getText().toString();
         phone=eTphone.getText().toString();
+
+        // Check if any field is empty
+        if (email.isEmpty() || password.isEmpty() || name.isEmpty() || phone.isEmpty()) {
+            Toast.makeText(Register.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(!email.contains("@")||!email.contains(".com")){
+            Toast.makeText(Register.this,"email adrss must contain @ and .com<3", Toast.LENGTH_SHORT).show();
+        }
+        if(password.length()<6){
+            Toast.makeText(Register.this, "password must be at list 6 chares",Toast.LENGTH_SHORT).show();
+        }
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -69,7 +81,7 @@ public class Register extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             uid = user.getUid();
-                            userdb=new User(name,email,phone,uid,mOrC);
+                            userdb=new User(name,email,phone,uid,mOrC,password);
                             refUsers.child(uid).setValue(userdb);
                             if(userdb.getmOrC()=="M"){
                                 Intent intent = new Intent(Register.this,BusinessEditing.class);
@@ -82,7 +94,6 @@ public class Register extends AppCompatActivity {
 
                             finish();
                         } else {
-                            Log.d("abcde","reg doean't work");
                             Toast.makeText(Register.this, "reg Failed", Toast.LENGTH_SHORT).show();
                         }
 

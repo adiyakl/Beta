@@ -38,7 +38,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/email1"
+                android:id="@+id/bname"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
@@ -84,48 +84,32 @@
                 android:textStyle="bold" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <LinearLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/bservices"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1">
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:hint="description of services"
+                android:textAlignment="center"
+                android:textSize="34sp"
+                android:textStyle="bold" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/bservices"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="15dp"
-                    android:layout_weight="1"
-                    android:hint="services"
-                    android:text=""
-                    android:textAlignment="center"
-                    android:textSize="34sp"
-                    android:textStyle="bold" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <Button
-                android:id="@+id/button3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:text="+"
-                android:textSize="34sp" />
-
-        </LinearLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Switch
-            android:id="@+id/switch2"
-            android:layout_width="226dp"
+            android:id="@+id/active"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:text="active"
-            android:textAlignment="textStart"
-            android:textSize="34sp" />
+            android:checked="true"
+            android:text="active business"
+            android:textSize="30sp"
+            android:textStyle="bold"/>
 
 
     </LinearLayout>

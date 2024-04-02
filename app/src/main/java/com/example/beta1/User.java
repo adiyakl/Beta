@@ -1,15 +1,20 @@
 package com.example.beta1;
 public class User {
-    private String name, email, phone, uid, mOrC;
+    private String name, email, phone, uid, mOrC,password;
     public User(){}
-    public User (String name, String email, String phone, String uid, String mOrC) {
+    public User (String name, String email, String phone, String uid, String mOrC,String password) {
         this.name=name;
         this.email=email;
         this.phone=phone;
         this.uid=uid;
         this.mOrC=mOrC;
+        this.password = password;
 
     }
+
+    public String getPassword() {return password;}
+
+    public void setPassword(String password) {this.password = password;}
 
     public String getmOrC(){return mOrC;}
     public void setmOrC(String mOrC) {this.mOrC = mOrC;}

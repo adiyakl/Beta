@@ -9,4 +9,6 @@ public class DBref {
 
     public static FirebaseDatabase FBDB = FirebaseDatabase.getInstance();
     public static DatabaseReference refUsers = FBDB.getReference("Users");
+    public static DatabaseReference refActiveBusiness = FBDB.getReference("Active Business");
+    public static DatabaseReference refOffBusiness = FBDB.getReference("Inactive businesses");
 }
