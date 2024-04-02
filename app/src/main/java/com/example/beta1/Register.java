@@ -43,7 +43,7 @@ public class Register extends AppCompatActivity {
         client = findViewById(R.id.client);
         mOrC = "C";
          eTname = findViewById(R.id.name);
-         eTemail = findViewById(R.id.email1);
+         eTemail = findViewById(R.id.bname);
          eTpass = findViewById(R.id.password);
          eTphone = findViewById(R.id.phone);
          bt1 = findViewById(R.id.button1);

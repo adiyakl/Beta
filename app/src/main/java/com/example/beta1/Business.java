@@ -3,15 +3,24 @@ package com.example.beta1;
 import java.util.ArrayList;
 
 public class Business {
-    private String name,adress,phone, active;
+    private String name,adress,phone, active,uid;
     private ArrayList<Service> services;
     public Business(){}
-    public Business(String name, String adress, String phone, String active, ArrayList<Service> services) {
+    public Business(String name, String adress, String phone, String active, ArrayList<Service> services, String uid) {
         this.name = name;
         this.adress = adress;
         this.phone = phone;
         this.active = active;
         this.services = services;
+        this.uid =uid;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getName() {

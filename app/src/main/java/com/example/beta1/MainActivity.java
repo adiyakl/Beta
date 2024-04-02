@@ -30,7 +30,7 @@ import com.google.firebase.database.ValueEventListener;
          setContentView(R.layout.activity_main);
          cB2 = findViewById(R.id.cB2);
          name1 = findViewById(R.id.name1);
-         email1 = findViewById(R.id.email1);
+         email1 = findViewById(R.id.bname);
          phone1 = findViewById(R.id.phone1);
 
 

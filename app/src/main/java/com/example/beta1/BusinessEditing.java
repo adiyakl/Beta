@@ -1,6 +1,8 @@
 package com.example.beta1;
 
 import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.Switch;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,17 +10,21 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class BusinessEditing extends AppCompatActivity {
+import java.util.ArrayList;
 
+public class BusinessEditing extends AppCompatActivity {
+    private EditText name,adress,phone;
+    private Switch active;
+    private ArrayList<Service> services;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_business_editing);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        name = findViewById(R.id.bname);
+        adress = findViewById(R.id.badress);
+        phone = findViewById(R.id.bphone);
+        active = findViewById(R.id.active);
+
+
     }
 }
