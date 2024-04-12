@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/main"
+        android:title="Main screen"
+        android:orderInCategory="100"
+        />
+    <item
+        android:id="@+id/calnder"
+        android:title="Calnder"
+        android:orderInCategory="200"
+        />
+    <item
+        android:id="@+id/choice"
+        android:title="Manicurist choice"
+        android:orderInCategory="300"
+        />
+    <item
+        android:id="@+id/logout"
+        android:title="Logout"
+        android:orderInCategory="400"
+        />
+</menu>

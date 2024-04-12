@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -41,7 +42,6 @@ public class Register extends AppCompatActivity {
         toLogin = findViewById(R.id.toLogin);
         manicurist = findViewById(R.id.mani);
         client = findViewById(R.id.client);
-        mOrC = "C";
          eTname = findViewById(R.id.name);
          eTemail = findViewById(R.id.bname);
          eTpass = findViewById(R.id.password);
@@ -49,6 +49,8 @@ public class Register extends AppCompatActivity {
          bt1 = findViewById(R.id.button1);
          stayco = findViewById(R.id.checkBox);
          mAuth = FirebaseAuth.getInstance();
+         mOrC = "C";
+         client.setBackgroundColor(Color.parseColor("#FFEFEF"));
 
          SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
          SharedPreferences.Editor editor=settings.edit();
@@ -108,12 +110,15 @@ public class Register extends AppCompatActivity {
     public void clientSel(View view){
         mOrC = "C";
         Toast.makeText(Register.this,mOrC, Toast.LENGTH_SHORT).show();
-
-    }
+        client.setBackgroundColor(Color.parseColor("#FFEFEF"));
+        manicurist.setBackgroundColor(Color.parseColor("#F6F5F2"));
+     }
 
     public void manicuristSel(View view) {
         mOrC = "M";
         Toast.makeText(Register.this,mOrC, Toast.LENGTH_SHORT).show();
+        client.setBackgroundColor(Color.parseColor("#F6F5F2"));
+        manicurist.setBackgroundColor(Color.parseColor("#FFEFEF"));
     }
 
 

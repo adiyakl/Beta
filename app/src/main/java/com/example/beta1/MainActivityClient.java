@@ -4,11 +4,15 @@ import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refUsers;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -24,7 +28,7 @@ public class MainActivityClient extends AppCompatActivity {
     TextView welcome ;
     String Sname;
     User user;
-
+    AlertDialog.Builder logoutAlert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,4 +78,41 @@ public class MainActivityClient extends AppCompatActivity {
             Intent intent = new Intent(MainActivityClient.this,Login.class);
             startActivity(intent);
     }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.client_menu,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.calnder) {
+            //to calnder
+        } else if (id == R.id.choice) {
+            //to manicurist choice
+        }
+        else if(id==R.id.logout){
+            logoutAlert = new AlertDialog.Builder(this);
+            logoutAlert.setMessage("Are you sure you want to logout?");
+            logoutAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    mAuth.signOut();
+                    Intent intent = new Intent(MainActivityClient.this,Login.class);
+                    startActivity(intent);
+                }
+            });
+            logoutAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            AlertDialog ad = logoutAlert.create();
+            ad.show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

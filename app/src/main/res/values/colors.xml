@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
+    <color name="jet">#343434</color>
+    <color name="black">#111111</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="babypowder">#FEFDF7</color>
+    <color name="eggshell">#F1EEDC</color>
+    <color name="pearl">#e5ddc5</color>
+    <color name="lightblue">#BED7DC</color>
+    <color name="colombiablue">#B3C8CF</color>
+    <color name="wallnutbrown">#6962AD</color>
+    <color name="darkblue">#092635</color>
+
+    <color name="babypink">#FFEFEF</color>
+    <color name="pink">#F3D0D7</color>
+    <color name="ivory">#F0EBE3</color>
+    <color name="ashwhite">#F6F5F2</color>
+    <color name="darkpurple">#49243E</color>
+
+
+
 </resources>
