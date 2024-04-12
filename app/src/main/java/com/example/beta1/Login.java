@@ -6,6 +6,7 @@ import static com.example.beta1.DBref.refUsers;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -53,6 +54,7 @@ public class Login extends AppCompatActivity {
         password1 = eTpass.getText().toString();
         if(email1.isEmpty()||password1.isEmpty()){
             Toast.makeText(Login.this,"please enter fileds<3",Toast.LENGTH_SHORT).show();
+            return;
         }
         mAuth.signInWithEmailAndPassword(email1, password1)
                 .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
@@ -75,15 +77,21 @@ public class Login extends AppCompatActivity {
                                             // Get the user object
                                             user = dataSnapshot.getValue(User.class);
                                             // Access the phone and password fields
-                                            Intent intent;
-                                            if (user.getmOrC() == "M") {
-                                                intent = new Intent(Login.this, MainActivityManicurist.class);
-                                            } else {
-                                                intent = new Intent(Login.this, MainActivityClient.class);
+
+                                            if (user.getmOrC().equals("M")) {
+                                                Intent intent = new Intent(Login.this, MainActivityManicurist.class);
+                                                startActivity(intent);
+                                                finish();
                                             }
-                                            startActivity(intent);
-                                            finish();
+
+                                            else if(user.getmOrC().equals("C")){
+                                                Intent intent = new Intent(Login.this, MainActivityClient.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+
                                         }
+
                                     }
 
                                     @Override
@@ -94,7 +102,7 @@ public class Login extends AppCompatActivity {
                             }
 
                         } else {
-                            Toast.makeText(Login.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Login Failed, please check your fields", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -114,21 +122,21 @@ public class Login extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         user = dataSnapshot.getValue(User.class);
-                        if (user.getmOrC() == "M") {
+                        if (isChecked && mAuth.getCurrentUser() != null) {
+                        if (user.getmOrC().equals("M")) {
                             Intent si = new Intent(Login.this, MainActivityManicurist.class);
-                            if (isChecked && mAuth.getCurrentUser() != null) {
                                 si.putExtra("newuser", false);
                                 startActivity(si);
                                 finish();
-                            }
-                        } else {
+
+                        } else if (user.getmOrC().equals("C")){
                             Intent si = new Intent(Login.this, MainActivityClient.class);
-                            if (isChecked && mAuth.getCurrentUser() != null) {
-                                si.putExtra("newuser", false);
-                                startActivity(si);
-                                finish();
-                            }
+                            si.putExtra("newuser", false);
+                            startActivity(si);
+                            finish();
                         }
+                        }
+
                     }
                 }
 

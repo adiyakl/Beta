@@ -52,11 +52,11 @@ public class Register extends AppCompatActivity {
          mOrC = "C";
          client.setBackgroundColor(Color.parseColor("#FFEFEF"));
 
-         SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
-         SharedPreferences.Editor editor=settings.edit();
-         editor.putBoolean("stayConnect",stayco.isChecked());
-         editor.commit();
-         stayCon = true;
+//         SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
+//         SharedPreferences.Editor editor=settings.edit();
+//         editor.putBoolean("stayConnect",stayco.isChecked());
+//         editor.commit();
+//         stayCon = true;
 
      }
     public void reg(View view) {
@@ -72,9 +72,11 @@ public class Register extends AppCompatActivity {
         }
         if(!email.contains("@")||!email.contains(".com")){
             Toast.makeText(Register.this,"email adrss must contain @ and .com<3", Toast.LENGTH_SHORT).show();
+            return;
         }
         if(password.length()<6){
             Toast.makeText(Register.this, "password must be at list 6 chares",Toast.LENGTH_SHORT).show();
+        return;
         }
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -85,7 +87,7 @@ public class Register extends AppCompatActivity {
                             uid = user.getUid();
                             userdb=new User(name,email,phone,uid,mOrC,password);
                             refUsers.child(uid).setValue(userdb);
-                            if(userdb.getmOrC()=="M"){
+                            if(userdb.getmOrC().equals("M")){
                                 Intent intent = new Intent(Register.this,BusinessEditing.class);
                                 startActivity(intent);
                             }

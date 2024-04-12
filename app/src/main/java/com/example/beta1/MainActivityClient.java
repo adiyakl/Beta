@@ -80,19 +80,21 @@ public class MainActivityClient extends AppCompatActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.client_menu,menu);
+        MenuItem item = menu.findItem(R.id.client_main);
+        item.setVisible(false);
+        this.invalidateOptionsMenu();
         return super.onCreateOptionsMenu(menu);
     }
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.calnder) {
+        if (id == R.id.client_calnder) {
             //to calnder
         } else if (id == R.id.choice) {
             //to manicurist choice
         }
-        else if(id==R.id.logout){
+        else if(id==R.id.Clogout){
             logoutAlert = new AlertDialog.Builder(this);
             logoutAlert.setMessage("Are you sure you want to logout?");
             logoutAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {

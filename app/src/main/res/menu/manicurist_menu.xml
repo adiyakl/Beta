@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
-        android:id="@+id/client_main"
+        android:id="@+id/mani_main"
         android:title="Main screen"
         android:orderInCategory="100"
         android:visible="true"
         />
     <item
-        android:id="@+id/client_calnder"
+        android:id="@+id/mani_calnder"
         android:title="Calnder"
         android:orderInCategory="200"
         android:visible="true"
         />
     <item
-        android:id="@+id/choice"
-        android:title="Manicurist choice"
+        android:id="@+id/week_def"
+        android:title="Edit work windows"
         android:orderInCategory="300"
         android:visible="true"
         />
     <item
-        android:id="@+id/Clogout"
-        android:title="Logout"
+        android:id="@+id/ebusiness"
+        android:title="Businesse editing"
         android:orderInCategory="400"
+        android:visible="true"
+        />
+    <item
+        android:id="@+id/Mlogout"
+        android:title="Logout"
+        android:orderInCategory="500"
         />
 </menu>
