@@ -88,7 +88,7 @@ public class Register extends AppCompatActivity {
                                 startActivity(intent);
                             }
                             else {//to c
-                                Intent intent = new Intent(Register.this,MainActivity.class);
+                                Intent intent = new Intent(Register.this,MainActivityClient.class);
                                 startActivity(intent);
                             }
 

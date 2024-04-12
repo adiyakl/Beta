@@ -1,5 +1,8 @@
 package com.example.beta1;
 
+import static com.example.beta1.DBref.mAuth;
+import static com.example.beta1.DBref.refUsers;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,15 +17,23 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 public class Login extends AppCompatActivity {
     EditText eTemail, eTpass;
     Button bt1;
     CheckBox stayco;
     boolean stayCon;
+    DataSnapshot dataSnapshot;
     String email1, password1;
+    User user;
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,26 +63,82 @@ public class Login extends AppCompatActivity {
                             SharedPreferences.Editor editor=settings.edit();
                             editor.putBoolean("stayConnect",stayco.isChecked());
                             editor.commit();
-                            Toast.makeText(Login.this, "Login Success", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(Login.this,MainActivity.class);
-                            startActivity(intent);
-                            finish();
+                            FirebaseUser currentUser = mAuth.getCurrentUser();
+                            if (currentUser != null) {
+                                String uid = currentUser.getUid();
+                                DatabaseReference currentUserRef = refUsers.child(uid);
+                                currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        // Check if the snapshot exists
+                                        if (dataSnapshot.exists()) {
+                                            // Get the user object
+                                            user = dataSnapshot.getValue(User.class);
+                                            // Access the phone and password fields
+                                            Intent intent;
+                                            if (user.getmOrC() == "M") {
+                                                intent = new Intent(Login.this, MainActivityManicurist.class);
+                                            } else {
+                                                intent = new Intent(Login.this, MainActivityClient.class);
+                                            }
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                        // Handle potential errors here
+                                    }
+                                });
+                            }
+
                         } else {
                             Toast.makeText(Login.this, "Login Failed", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
+
+
     protected void onStart() {
         super.onStart();
         SharedPreferences settings = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
         Boolean isChecked = settings.getBoolean("stayConnect", false);
-        Intent si = new Intent(Login.this, MainActivity.class);
-        if (isChecked && mAuth.getCurrentUser() != null) {
-            si.putExtra("newuser", false);
-            startActivity(si);
-            finish();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            String uid = currentUser.getUid();
+            DatabaseReference currentUserRef = refUsers.child(uid);
+            currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        user = dataSnapshot.getValue(User.class);
+                        if (user.getmOrC() == "M") {
+                            Intent si = new Intent(Login.this, MainActivityManicurist.class);
+                            if (isChecked && mAuth.getCurrentUser() != null) {
+                                si.putExtra("newuser", false);
+                                startActivity(si);
+                                finish();
+                            }
+                        } else {
+                            Intent si = new Intent(Login.this, MainActivityClient.class);
+                            if (isChecked && mAuth.getCurrentUser() != null) {
+                                si.putExtra("newuser", false);
+                                startActivity(si);
+                                finish();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle potential errors here
+                }
+            });
         }
+
     }
     protected void onPause() {
         super.onPause();
@@ -81,6 +148,7 @@ public class Login extends AppCompatActivity {
         Intent intent = new Intent(Login.this, Register.class);
         startActivity(intent);
     }
+
 
 
 }
