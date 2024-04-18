@@ -96,7 +96,8 @@ public class MainActivityManicurist extends AppCompatActivity {
             startActivity(intent);
         }
         else if(id==R.id.week_def){
-            //to work windows
+            Intent intent= new Intent(this,WorkWeekDefinition.class);
+            startActivity(intent);
         }
         else if(id==R.id.Mlogout){
             logoutAlert = new AlertDialog.Builder(this);
