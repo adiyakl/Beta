@@ -11,5 +11,6 @@ public class DBref {
     public static DatabaseReference refActiveBusiness = FBDB.getReference("Active Business");
     public static DatabaseReference refOffBusiness = FBDB.getReference("Inactive businesses");
     public static DatabaseReference refActiveCalendar = FBDB.getReference("Active calendars");
+    public static DatabaseReference refActiveAppointments = FBDB.getReference("Appointments");
 
 }
