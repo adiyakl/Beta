@@ -1,7 +1,10 @@
 package com.example.beta1;
 
+import static com.example.beta1.CalendarUtils.DefaultHours;
+import static com.example.beta1.CalendarUtils.selectedDate;
 import static com.example.beta1.ChangeType.Sdate;
 import static com.example.beta1.DBref.mAuth;
+import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
 
@@ -30,6 +33,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.time.DayOfWeek;
@@ -51,11 +55,12 @@ public class WorkWeekDefinition extends AppCompatActivity {
     private String uid ="0";
     private ArrayList<String> partInWindow = new ArrayList<>();
     private ArrayList<String> NewPartInWindow= new ArrayList<>();
-    private WorkWindow window ;
+    private WorkWindow window = new WorkWindow("","",new ArrayList<>());
     private String note =" ";
     int hour, minute;
     LocalDate date;
     DayOfWeek day;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +139,6 @@ public class WorkWeekDefinition extends AppCompatActivity {
                     defaultWindow();
                 }
                 else {
-                    Toast.makeText(WorkWeekDefinition.this,Sdate(date)+"you already in the system",Toast.LENGTH_SHORT).show();
 
                }
             }
@@ -146,12 +150,11 @@ public class WorkWeekDefinition extends AppCompatActivity {
         });
     }
 public void defaultWindow(){
-    ArrayList<String> partInWindowDefault = new ArrayList<>(Arrays.asList("9:00","10:00","11:00","12:00","13:00","14:00"));
-    begTime.setText("9:00");
-    endTime.setText("14:00");
-    window = new WorkWindow("default","",partInWindowDefault);
+    ArrayList<String> partInWindowDefault = new ArrayList<>(Arrays.asList("sorry we don't work today"));
+    window = new WorkWindow("DefaultWindow","default",partInWindowDefault);
     refActiveCalendar.child(uid).child("DefaultWindow").setValue(window);
-    Toast.makeText(this,"your system default: 9:00-14:00",Toast.LENGTH_SHORT).show();
+    Toast.makeText(this,"your system default: sorry we don't work today",Toast.LENGTH_SHORT).show();
+
 }
 
 
@@ -180,7 +183,7 @@ public void defaultWindow(){
 
 
                     if(cb.isChecked()) {
-                        window = new WorkWindow(Sdate(date), note, partInWindow);
+                        window = new WorkWindow("forDate",note, partInWindow);
                         checkIfWindowExist(window);
 
                     }
@@ -188,10 +191,9 @@ public void defaultWindow(){
                         if(partInWindow.isEmpty()){
                             Toast.makeText(WorkWeekDefinition.this,"default window set to be empty",Toast.LENGTH_SHORT).show();
                         }
-                        window = new WorkWindow("cusDefault", note, partInWindow);
-                        refActiveCalendar.child(uid).child("DefaultWindow").removeValue();
-                        refActiveCalendar.child(uid).child("DefaultWindow").setValue(window);
-                        Toast.makeText(WorkWeekDefinition.this, "youre defualt window is set", Toast.LENGTH_SHORT).show();
+
+                        showAD();
+
                     }
 
             }
@@ -220,6 +222,9 @@ public void defaultWindow(){
                 }
                 else {
                     refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
+                    String b = partInWindow.get(0);
+                    String e = partInWindow.get(partInWindow.size()-1);
+                    Toast.makeText(WorkWeekDefinition.this,"your window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -233,11 +238,44 @@ public void defaultWindow(){
     public void showAD(){
 //      change window
         delWAlert = new AlertDialog.Builder(this);
-        delWAlert.setMessage("setting a new window cancel all of the appoinments on this date, are u suer?");
+        if(cb.isChecked()) {
+            delWAlert.setMessage("setting a new window cancel all of the appoinments on this date, are u suer?");
+        }
+        if(!cb.isChecked()){
+            delWAlert.setMessage("setting a new default window will keep all of the appoinments that has already been set, but u might wont be able to see all of them in calendar. are u suer?");
+        }
         delWAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                merD();
+                if (cb.isChecked()){
+                    merD();
+                }
+                else{
+                    window = new WorkWindow("DefaultWindow", note, partInWindow);
+                    refActiveCalendar.child(uid).child("DefaultWindow").removeValue();
+                    refActiveCalendar.child(uid).child("DefaultWindow").setValue(window);
+//                    DatabaseReference refActiveCalendar = FirebaseDatabase.getInstance().getReference().child("Active calendars");
+                    DBref.refActiveAppointments.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                                    if (childSnapshot.getValue().equals("DefaultWindow")) {
+                                        String date = childSnapshot.getKey();
+                                        refActiveAppointments.child(uid).child(date).removeValue();
+                                    }
+                                }
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                    String b = partInWindow.get(0);
+                    String e = partInWindow.get(partInWindow.size()-1);
+                    Toast.makeText(WorkWeekDefinition.this,"your defualt window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -269,17 +307,25 @@ public void defaultWindow(){
                 }
                 else{lst.addAll(NewPartInWindow);}
                 NewPartInWindow = ChangeType.sortTimes(lst);
-                window = new WorkWindow(Sdate(date),note,NewPartInWindow);
+                window = new WorkWindow("forDate",note,NewPartInWindow);
+                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
                 refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
                 refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
+                String b = partInWindow.get(0);
+                String e = partInWindow.get(partInWindow.size()-1);
+                Toast.makeText(WorkWeekDefinition.this,"your window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
 
             }
         });
         mergD.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
                 refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
                 refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
+                String b = partInWindow.get(0);
+                String e = partInWindow.get(partInWindow.size()-1);
+                Toast.makeText(WorkWeekDefinition.this,"your window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
             }
         });
         AlertDialog add = mergD.create();
@@ -380,7 +426,8 @@ public void defaultWindow(){
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.mani_calnder) {
-            //to calnder
+            Intent intent = new Intent(this,WeekViewActivity.class);
+            startActivity(intent);
         } else if (id == R.id.mani_main) {
             Intent intent= new Intent(this,MainActivityManicurist.class);
             startActivity(intent);

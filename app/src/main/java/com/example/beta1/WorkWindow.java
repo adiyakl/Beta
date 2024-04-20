@@ -8,26 +8,26 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class WorkWindow {
-    private String date, note;
+    private String wKey, note;
     ArrayList<String> partInWindow = new ArrayList<>();
 
     public WorkWindow() {
     }
 
-    public WorkWindow(String date, String note, ArrayList<String> partInWindow) {
-        this.date = date;
+    public WorkWindow(String wKey, String note, ArrayList<String> partInWindow) {
+        this.wKey = wKey;
         this.note = note;
         this.partInWindow =partInWindow;
     }
 
 
 
-    public String getDate() {
-        return date;
+    public String getwKey() {
+        return wKey;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setwKey(String wKey) {
+        this.wKey = wKey;
     }
 
 

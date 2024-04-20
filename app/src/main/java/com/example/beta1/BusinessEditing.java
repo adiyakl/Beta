@@ -215,7 +215,8 @@ public class BusinessEditing extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.mani_calnder) {
-            //to calnder
+            Intent intent = new Intent(this,WeekViewActivity.class);
+            startActivity(intent);
         } else if (id == R.id.mani_main) {
             Intent intent= new Intent(BusinessEditing.this,MainActivityManicurist.class);
             startActivity(intent);

@@ -32,6 +32,13 @@ public class ChangeType {
             Collections.sort(timeList, timeComparator);
             return timeList;
         }
+        public static String FBtoString(ArrayList<String> arr){
+         String str = "";
+         for(int i = 0;i<arr.size();i++){
+             str = str+" "+arr.get(i);
+         }
+    return str;
+    }
 
     public static String STime (LocalDate date){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");

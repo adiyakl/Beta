@@ -40,12 +40,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
         View view = inflater.inflate(R.layout.calendar_cell, parent, false);
         // Access the view's current layout parameters.
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        // Set the view's height to one-sixth of the parent's height.
 
-//        if(days.size()>15) {//month view
-//            layoutParams.height = (int) (parent.getHeight() * 0.16666666);
-//            // Apply the modified layout parameters back to the view.
-//        }
         if (days.size()<=15){ // week view
             layoutParams.height = (int) (parent.getHeight()*0.5 );
 
@@ -72,11 +67,6 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
         // indicates the position of the item within the dataset (daysOfMonth ArrayList) that needs to be bound to the corresponding view holder.
     }
 
-
-    //Retrieves the LocalDate object at the specified position in the days list.
-    private LocalDate getLocalDate(int position) {
-        return days.get(position);
-    }
 
     //    Returns the total number of items in the days list.
     @Override
