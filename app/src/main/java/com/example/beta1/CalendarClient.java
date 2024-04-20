@@ -3,11 +3,12 @@ package com.example.beta1;
 import static com.example.beta1.CalendarUtils.daysInWeekArray;
 import static com.example.beta1.CalendarUtils.monthYearFromDate;
 import static com.example.beta1.CalendarUtils.selectedDate;
-import static com.example.beta1.ChangeType.FBtoString;
 import static com.example.beta1.ChangeType.Sdate;
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveAppointments;
+import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
+import static com.example.beta1.DBref.refUsers;
 
 
 import android.content.DialogInterface;
@@ -29,7 +30,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,11 +40,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class WeekViewActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener {
+public class CalendarClient extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private TextView monthYearText;
     AlertDialog.Builder logoutAlert;
     private String uid = "0";
@@ -53,26 +52,62 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     public ArrayList<String> hours = new ArrayList<>();
     Button bt1, bt2;
-    TextView note;
+    TextView note,busName;
     private String snote = "no notes at the moment";
     private String windowKey = "0";
+    private String Cuid =" 0";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_week_view);
         calendarRecyclerView = findViewById(R.id.calRecycleView);
-        monthYearText= findViewById(R.id.monthYear);
+        monthYearText = findViewById(R.id.monthYear);
         l = findViewById(R.id.alist);
         bt1 = findViewById(R.id.bt1);
         bt2 = findViewById(R.id.bt2);
         bt1.setText("<--");
         bt2.setText("-->");
-        note= findViewById(R.id.noteTv);
-        if(currentUser != null){
-            uid = currentUser.getUid();
-        }
+        note = findViewById(R.id.noteTv);
+        getBusinessUid();
+        setHeadLine();
         CalendarUtils.selectedDate = LocalDate.now();
         setWeekView();
+    }
+    public void getBusinessUid(){
+        if ( currentUser!= null) {
+            Cuid = currentUser.getUid();
+        }
+        refUsers.child(Cuid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    User user = snapshot.getValue(User.class);
+                    uid = user.getLinked();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+    public void setHeadLine(){
+        refActiveBusiness.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    Business b = snapshot.getValue(Business.class);
+                    busName.setText(b.getName()+" "+"Calendar!");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 
@@ -90,12 +125,13 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
             @Override
             public void onItemClick(AdapterView<?> arrayAdapter, View view, int i, long l) {
                 String hourFromArray = arrayAdapter.getItemAtPosition(i).toString();
-                setAp(selectedDate, hourFromArray,i );
+                setAp(selectedDate, hourFromArray, i);
             }
         });
 
     }
-    public void setList(){
+
+    public void setList() {
 
         note.setText(snote);
         DatabaseReference currentDateRef = refActiveAppointments.child(uid).child(Sdate(selectedDate)).child(windowKey);
@@ -123,7 +159,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                 }
 
                 // Update the ListView with the updated hours list
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(WeekViewActivity.this, android.R.layout.simple_list_item_1, hours);
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(CalendarClient.this, android.R.layout.simple_list_item_1, hours);
                 l.setAdapter(arrayAdapter);
 
             }
@@ -134,20 +170,18 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
         });
     }
 
-    public void setAp (LocalDate date, String hour, int index){
+    public void setAp(LocalDate date, String hour, int index) {
         String sdate = Sdate(date);
         // check double booked
-        if(hour.length()==5){
+        if (hour.length() == 5) {
             Appointment app = new Appointment(hour, sdate, "lo chrih at dani");
 
             refActiveAppointments.child(uid).child(sdate).child(windowKey).child(hour).setValue(app);
             setWeekView();
-        }
-        else {
-            Toast.makeText(WeekViewActivity.this, "this hour is unavailable", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(CalendarClient.this, "this hour is unavailable", Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     public void onItemClick(int position, LocalDate date) {
@@ -184,7 +218,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                         snote = DBWindow.getNote();
                         hours = DBWindow.getPartInWindow();
                         windowKey = DBWindow.getwKey();
-                        future.complete(new WorkWindow(windowKey,snote, hours));
+                        future.complete(new WorkWindow(windowKey, snote, hours));
                     }
                 }
             }
@@ -205,10 +239,10 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                         snote = DBWindow.getNote();
                         hours = DBWindow.getPartInWindow();
                         windowKey = DBWindow.getwKey();
-                        future.complete(new WorkWindow(windowKey,snote, hours));
+                        future.complete(new WorkWindow(windowKey, snote, hours));
                     } else {
                         if (!future.isDone()) {
-                            future.complete(new WorkWindow("","", new ArrayList<>()));
+                            future.complete(new WorkWindow("", "", new ArrayList<>()));
                         }
                     }
                 } else {
@@ -221,7 +255,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
             return future.get(); // waits until future is complete
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            return new WorkWindow("","", new ArrayList<>()); // or handle exception accordingly
+            return new WorkWindow("", "", new ArrayList<>()); // or handle exception accordingly
         }
     }
 
@@ -237,10 +271,9 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
     }
 
 
-
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.manicurist_menu,menu);
-        MenuItem item = menu.findItem(R.id.mani_calnder);
+        getMenuInflater().inflate(R.menu.client_menu,menu);
+        MenuItem item = menu.findItem(R.id.client_main);
         item.setVisible(false);
         this.invalidateOptionsMenu();
         return super.onCreateOptionsMenu(menu);
@@ -248,25 +281,20 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
 
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.mani_main) {
-            Intent intent = new Intent(this,MainActivityManicurist.class);
+        if (id == R.id.client_main) {
+            Intent intent= new Intent(CalendarClient.this,MainActivityClient.class);
             startActivity(intent);
-        } else if (id == R.id.ebusiness) {
-            Intent intent= new Intent(this,BusinessEditing.class);
-            startActivity(intent);
+        } else if (id == R.id.choice) {
+            //to manicurist choice
         }
-        else if(id==R.id.week_def){
-            Intent intent= new Intent(this,WorkWeekDefinition.class);
-            startActivity(intent);
-        }
-        else if(id==R.id.Mlogout){
+        else if(id==R.id.Clogout){
             logoutAlert = new AlertDialog.Builder(this);
             logoutAlert.setMessage("Are you sure you want to logout?");
             logoutAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     mAuth.signOut();
-                    Intent intent = new Intent(WeekViewActivity.this,Login.class);
+                    Intent intent = new Intent(CalendarClient.this,Login.class);
                     startActivity(intent);
                 }
             });
@@ -282,3 +310,5 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
         return super.onOptionsItemSelected(item);
     }
 }
+
+

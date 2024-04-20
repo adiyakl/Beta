@@ -90,9 +90,11 @@ public class MainActivityClient extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.client_calnder) {
-            //to calnder
+            Intent intent = new Intent(this,CalendarClient.class);
+            startActivity(intent);
         } else if (id == R.id.choice) {
-            //to manicurist choice
+            Intent intent = new Intent(this,ChoosingABusiness.class);
+            startActivity(intent);
         }
         else if(id==R.id.Clogout){
             logoutAlert = new AlertDialog.Builder(this);

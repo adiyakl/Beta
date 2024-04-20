@@ -85,14 +85,14 @@ public class Register extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             uid = user.getUid();
-                            userdb=new User(name,email,phone,uid,mOrC,password);
+                            userdb=new User(name,email,phone,uid,mOrC,password,"");
                             refUsers.child(uid).setValue(userdb);
                             if(userdb.getmOrC().equals("M")){
                                 Intent intent = new Intent(Register.this,BusinessEditing.class);
                                 startActivity(intent);
                             }
                             else {//to c
-                                Intent intent = new Intent(Register.this,MainActivityClient.class);
+                                Intent intent = new Intent(Register.this,ChoosingABusiness.class);
                                 startActivity(intent);
                             }
 
