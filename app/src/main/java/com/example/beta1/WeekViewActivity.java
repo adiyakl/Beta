@@ -103,7 +103,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
     }
     public void setList(){
 
-//        note.setText(snote);
+        note.setText(snote);
         DatabaseReference currentDateRef = refActiveAppointments.child(uid).child(Sdate(selectedDate)).child(windowKey);
         currentDateRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
