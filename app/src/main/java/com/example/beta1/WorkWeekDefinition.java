@@ -255,14 +255,16 @@ public void defaultWindow(){
                     refActiveCalendar.child(uid).child("DefaultWindow").removeValue();
                     refActiveCalendar.child(uid).child("DefaultWindow").setValue(window);
 //                    DatabaseReference refActiveCalendar = FirebaseDatabase.getInstance().getReference().child("Active calendars");
-                    DBref.refActiveAppointments.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                    refActiveAppointments.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.exists()) {
-                                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
-                                    if (childSnapshot.getValue().equals("DefaultWindow")) {
-                                        String date = childSnapshot.getKey();
-                                        refActiveAppointments.child(uid).child(date).removeValue();
+                                for (DataSnapshot dateSnapshot : snapshot.getChildren()) {
+                                    String date = dateSnapshot.getKey(); // Get the key of each date
+                                    // Check if the child of date contains "DefaultWindow"
+                                    if (dateSnapshot.child("DefaultWindow").exists()) {
+                                        // Remove the value under "DefaultWindow" for this date
+                                        dateSnapshot.child("DefaultWindow").getRef().removeValue();
                                     }
                                 }
                             }
