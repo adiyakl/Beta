@@ -12,9 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light"
         tools:targetApi="31">
-        <activity
-            android:name=".bussinessData"
-            android:exported="false" />
+
         <activity
             android:name=".ChoosingABusiness"
             android:exported="false" />

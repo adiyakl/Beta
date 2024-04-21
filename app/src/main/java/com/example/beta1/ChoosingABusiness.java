@@ -47,6 +47,7 @@ public class ChoosingABusiness extends AppCompatActivity {
     AlertDialog.Builder logoutAlert;
     private ArrayList<String> businessesList = new ArrayList<>();
     private ArrayList<Business> businesses = new ArrayList<>();
+    public static String businessName ="";
     TextView busName,busServ,busAdres,busPhone,busMani, loadingIcon;
     private Business b = new Business("","","","","","");
     static User u;
@@ -107,6 +108,7 @@ public class ChoosingABusiness extends AppCompatActivity {
                             User user = snapshot.getValue(User.class);
                             user.setLinked(linkUid);
                             refUsers.child(uid).setValue(user);
+
                             Toast.makeText(ChoosingABusiness.this,"updated",Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(ChoosingABusiness.this,CalendarClient.class);
                             startActivity(intent);

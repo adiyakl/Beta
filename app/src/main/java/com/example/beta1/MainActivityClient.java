@@ -1,6 +1,7 @@
 package com.example.beta1;
 
 import static com.example.beta1.DBref.mAuth;
+import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refUsers;
 
 import androidx.annotation.NonNull;
@@ -29,15 +30,56 @@ public class MainActivityClient extends AppCompatActivity {
     String Sname;
     User user;
     AlertDialog.Builder logoutAlert;
+    public static String uid = mAuth.getCurrentUser().getUid();
+    public static User thisUser ;
+    public static String Muid = "0";
+    public static Business thisbusiness = new Business("","","","","","");
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_client);
         welcome = findViewById(R.id.welcomSign);
+        getUser();
 
 
+    }
+    public static void getUser(){
+        DatabaseReference currentuser = refUsers.child(uid);
+        currentuser.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    thisUser = snapshot.getValue(User.class);
+                    if(thisUser!=null) {
+                        Muid = thisUser.getLinked();
+                        getBusiness();
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+    public static void getBusiness(){
+        if(Muid!=null) {
+            DatabaseReference currentuser = refActiveBusiness.child(Muid);
+            currentuser.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        thisbusiness = snapshot.getValue(Business.class);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        }
     }
 
     @Override
@@ -48,6 +90,7 @@ public class MainActivityClient extends AppCompatActivity {
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("stayConnect", true);
         editor.commit();
+
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 

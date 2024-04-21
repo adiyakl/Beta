@@ -9,6 +9,8 @@ import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
 import static com.example.beta1.DBref.refUsers;
+import static com.example.beta1.MainActivityClient.thisUser;
+import static com.example.beta1.MainActivityClient.thisbusiness;
 
 
 import android.content.DialogInterface;
@@ -43,19 +45,21 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import javax.security.auth.callback.Callback;
+
+
 public class CalendarClient extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private TextView monthYearText;
     AlertDialog.Builder logoutAlert;
-    private String uid = "0";
+    private String Muid = "0";
     private RecyclerView calendarRecyclerView;
     private ListView l;
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
+    private String busnam  = "0";
     public ArrayList<String> hours = new ArrayList<>();
     Button bt1, bt2;
     TextView note,headline;
     private String snote = "no notes at the moment";
     private String windowKey = "0";
-    private String Cuid ="0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,71 +74,13 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
         bt2.setText("-->");
         note = findViewById(R.id.noteTv);
         headline =findViewById(R.id.headline);
-        if ( currentUser!= null) {
-            Cuid = currentUser.getUid();
-        }
+        Muid =MainActivityClient.Muid;
+        busnam = thisbusiness.getName();
+        headline.setText(busnam+"  "+"calendar!");
 
-
+        Toast.makeText(this,Muid,Toast.LENGTH_SHORT).show();
         CalendarUtils.selectedDate = LocalDate.now();
         setWeekView();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        getBusinessUid();
-        setHeadLine();
-//        CompletableFuture.supplyAsync(this::getBusinessUid)
-//                .thenAccept(this::onUidLoaded);
-    }
-
-    public void onUidLoaded(String uid){
-        this.uid =uid;
-        setHeadLine();
-
-    }
-    public String getBusinessUid(){
-        CompletableFuture<String> uidfuture = new CompletableFuture<>();
-        DatabaseReference currentuser = refUsers.child(Cuid);
-        currentuser.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    User user = snapshot.getValue(User.class);
-                    uid = user.getLinked();
-                    uidfuture.complete(uid); // Completing the future with the UID value
-                } else {
-                    uidfuture.complete("0"); // Completing with default value when snapshot doesn't exist
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                uidfuture.completeExceptionally(error.toException()); // Completing exceptionally if there's an error
-            }
-        });
-        try {
-            return uidfuture.get(); // Waits until the future is complete
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return "0"; // or handle exception accordingly
-        }
-    }
-    public void setHeadLine(){
-        refActiveBusiness.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()){
-                    Business b = snapshot.getValue(Business.class);
-                    headline.setText(b.getName()+" "+"calendar!");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
     }
 
 
@@ -159,9 +105,8 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
     }
 
     public void setList() {
-
         note.setText(snote);
-        DatabaseReference currentDateRef = refActiveAppointments.child(uid).child(Sdate(selectedDate)).child(windowKey);
+        DatabaseReference currentDateRef = refActiveAppointments.child(Muid).child(Sdate(selectedDate)).child(windowKey);
         currentDateRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -175,7 +120,9 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
                                 // Check if the hour matches the appointment time
                                 if (hours.get(i).equals(app.getTime())) {
                                     // Update the text for the matched hour
-                                    hours.set(i, app.getTime() + "  " + app.getText());
+                                    hours.set(i, "taken");
+
+//                                    if app.cuid eq uid -> show details
                                 }
                             }
                         }
@@ -200,10 +147,9 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
     public void setAp(LocalDate date, String hour, int index) {
         String sdate = Sdate(date);
         // check double booked
-        if (hour.length() == 5) {
+        if (!hour.equals("taken")) {
             Appointment app = new Appointment(hour, sdate, "lo chrih at dani");
-
-            refActiveAppointments.child(uid).child(sdate).child(windowKey).child(hour).setValue(app);
+            refActiveAppointments.child(Muid).child(sdate).child(windowKey).child(hour).setValue(app);
             setWeekView();
         } else {
             Toast.makeText(CalendarClient.this, "this hour is unavailable", Toast.LENGTH_SHORT).show();
@@ -222,21 +168,20 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
     public void onWindowLoaded(WorkWindow window) {
         this.hours = window.getPartInWindow();
         this.snote = window.getNote();
+        if(snote.isEmpty()){
+            this.snote = "no notes at the moment";
+        }
         this.windowKey = window.getwKey();
         setList();
 
     }
 
     public WorkWindow setWindow1() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            uid = currentUser.getUid();
-        }
         String sdate = Sdate(selectedDate);
 
         CompletableFuture<WorkWindow> future = new CompletableFuture<>();
 
-        refActiveCalendar.child(uid).child(sdate).addListenerForSingleValueEvent(new ValueEventListener() {
+        refActiveCalendar.child(Muid).child(sdate).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -256,7 +201,7 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
             }
         });
 
-        refActiveCalendar.child(uid).child("DefaultWindow").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        refActiveCalendar.child(Muid).child("DefaultWindow").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (task.isSuccessful()) {

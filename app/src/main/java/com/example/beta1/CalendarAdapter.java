@@ -60,7 +60,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
         {
             holder.dayOfMonth.setText(String.valueOf(date.getDayOfMonth()));
             if(date.equals(CalendarUtils.selectedDate))
-                holder.parentView.setBackgroundColor(Color.MAGENTA);
+                holder.parentView.setBackgroundColor(Color.parseColor("#F3D0D7"));
 
         }
         //This method ensures that each calendar cell displays the correct day number as you scroll through RecyclerView.
