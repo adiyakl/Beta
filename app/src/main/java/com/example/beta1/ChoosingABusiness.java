@@ -22,9 +22,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,15 +39,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class ChoosingABusiness extends AppCompatActivity {
     ListView list;
     AlertDialog.Builder logoutAlert;
     private ArrayList<String> businessesList = new ArrayList<>();
     private ArrayList<Business> businesses = new ArrayList<>();
-    TextView busName,busServ,busAdres,busPhone,busMani;
+    TextView busName,busServ,busAdres,busPhone,busMani, loadingIcon;
     private Business b = new Business("","","","","","");
     static User u;
+    boolean showingLoad = false;
     private static boolean clicked =false;
     private String uid = "0";
     private  String linkUid;
@@ -56,16 +61,21 @@ public class ChoosingABusiness extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choosing_abusiness);
         list = findViewById(R.id.listview);
-        createList();
         busName = findViewById(R.id.buName);
         busServ = findViewById(R.id.busServ);
         busPhone = findViewById(R.id.busPhone);
         busAdres = findViewById(R.id.busAddre);
         busMani = findViewById(R.id.busMani);
         bt = findViewById(R.id.select);
+        loadingIcon = findViewById(R.id.loading);
+
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(showingLoad ){
+                    Toast.makeText(ChoosingABusiness.this,"please wait for businesses to show up",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if(clicked ==false){
                     Toast.makeText(ChoosingABusiness.this,"please choose a business",Toast.LENGTH_SHORT).show();
                     return;
@@ -82,6 +92,7 @@ public class ChoosingABusiness extends AppCompatActivity {
                 clicked = true;
             }
         });
+        createList();
     }
 
             public void setLinked1(){
@@ -136,28 +147,35 @@ public class ChoosingABusiness extends AppCompatActivity {
 
 
     public void createList() {
-        refActiveBusiness.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    for (DataSnapshot businessSnapshot : snapshot.getChildren()) {
-                        Business business = businessSnapshot.getValue(Business.class);
-                        if (business != null) {
-                            businessesList.add(business.getName());
-                            businesses.add(business);
+
+        loadingIcon.setVisibility(View.VISIBLE);
+        showingLoad =true;
+            refActiveBusiness.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        for (DataSnapshot businessSnapshot : snapshot.getChildren()) {
+                            Business business = businessSnapshot.getValue(Business.class);
+                            if (business != null) {
+                                businessesList.add(business.getName());
+                                businesses.add(business);
+                            }
                         }
+
                     }
-
+                    loadingIcon.setVisibility(View.GONE);
+                    showingLoad =false;
+                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(ChoosingABusiness.this, android.R.layout.simple_list_item_1, businessesList);
+                    list.setAdapter(arrayAdapter);
                 }
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(ChoosingABusiness.this, android.R.layout.simple_list_item_1, businessesList);
-                list.setAdapter(arrayAdapter);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle error
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    // Handle error
+                }
+            });
+
+
     }
 
 

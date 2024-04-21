@@ -52,15 +52,15 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
     private FirebaseUser currentUser = mAuth.getCurrentUser();
     public ArrayList<String> hours = new ArrayList<>();
     Button bt1, bt2;
-    TextView note,busName;
+    TextView note,headline;
     private String snote = "no notes at the moment";
     private String windowKey = "0";
-    private String Cuid =" 0";
+    private String Cuid ="0";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_week_view);
+        setContentView(R.layout.activity_client_calendar);
         calendarRecyclerView = findViewById(R.id.calRecycleView);
         monthYearText = findViewById(R.id.monthYear);
         l = findViewById(R.id.alist);
@@ -69,29 +69,56 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
         bt1.setText("<--");
         bt2.setText("-->");
         note = findViewById(R.id.noteTv);
-        getBusinessUid();
-        setHeadLine();
-        CalendarUtils.selectedDate = LocalDate.now();
-        setWeekView();
-    }
-    public void getBusinessUid(){
+        headline =findViewById(R.id.headline);
         if ( currentUser!= null) {
             Cuid = currentUser.getUid();
         }
-        refUsers.child(Cuid).addListenerForSingleValueEvent(new ValueEventListener() {
+
+
+        CalendarUtils.selectedDate = LocalDate.now();
+        setWeekView();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getBusinessUid();
+        setHeadLine();
+//        CompletableFuture.supplyAsync(this::getBusinessUid)
+//                .thenAccept(this::onUidLoaded);
+    }
+
+    public void onUidLoaded(String uid){
+        this.uid =uid;
+        setHeadLine();
+
+    }
+    public String getBusinessUid(){
+        CompletableFuture<String> uidfuture = new CompletableFuture<>();
+        DatabaseReference currentuser = refUsers.child(Cuid);
+        currentuser.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
+                if(snapshot.exists()){
                     User user = snapshot.getValue(User.class);
                     uid = user.getLinked();
+                    uidfuture.complete(uid); // Completing the future with the UID value
+                } else {
+                    uidfuture.complete("0"); // Completing with default value when snapshot doesn't exist
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                uidfuture.completeExceptionally(error.toException()); // Completing exceptionally if there's an error
             }
         });
+        try {
+            return uidfuture.get(); // Waits until the future is complete
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return "0"; // or handle exception accordingly
+        }
     }
     public void setHeadLine(){
         refActiveBusiness.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -99,7 +126,7 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()){
                     Business b = snapshot.getValue(Business.class);
-                    busName.setText(b.getName()+" "+"Calendar!");
+                    headline.setText(b.getName()+" "+"calendar!");
                 }
             }
 
@@ -285,7 +312,8 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
             Intent intent= new Intent(CalendarClient.this,MainActivityClient.class);
             startActivity(intent);
         } else if (id == R.id.choice) {
-            //to manicurist choice
+            Intent intent= new Intent(CalendarClient.this, ChoosingABusiness.class);
+            startActivity(intent);
         }
         else if(id==R.id.Clogout){
             logoutAlert = new AlertDialog.Builder(this);
