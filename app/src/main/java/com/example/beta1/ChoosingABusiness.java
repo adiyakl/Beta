@@ -4,6 +4,7 @@ import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
 import static com.example.beta1.DBref.refUsers;
+import static com.example.beta1.MainActivityClient.thisUser;
 
 
 import android.content.Context;
@@ -69,7 +70,7 @@ public class ChoosingABusiness extends AppCompatActivity {
         busMani = findViewById(R.id.busMani);
         bt = findViewById(R.id.select);
         loadingIcon = findViewById(R.id.loading);
-
+        loadingIcon.setText("Loding...");
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -110,7 +111,7 @@ public class ChoosingABusiness extends AppCompatActivity {
                             refUsers.child(uid).setValue(user);
 
                             Toast.makeText(ChoosingABusiness.this,"updated",Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ChoosingABusiness.this,CalendarClient.class);
+                            Intent intent = new Intent(ChoosingABusiness.this,MainActivityClient.class);
                             startActivity(intent);
                         }
                     }
@@ -188,6 +189,8 @@ public class ChoosingABusiness extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.client_menu,menu);
         MenuItem item = menu.findItem(R.id.choice);
         item.setVisible(false);
+        MenuItem i = menu.findItem(R.id.client_calnder);
+
         this.invalidateOptionsMenu();
         return super.onCreateOptionsMenu(menu);
     }

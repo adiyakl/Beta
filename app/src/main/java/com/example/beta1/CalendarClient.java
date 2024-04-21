@@ -59,7 +59,7 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
     Button bt1, bt2;
     TextView note,headline;
     private String snote = "no notes at the moment";
-    private String windowKey = "0";
+    private String windowKey = "DefaultWindow";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,8 +77,6 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
         Muid =MainActivityClient.Muid;
         busnam = thisbusiness.getName();
         headline.setText(busnam+"  "+"calendar!");
-
-        Toast.makeText(this,Muid,Toast.LENGTH_SHORT).show();
         CalendarUtils.selectedDate = LocalDate.now();
         setWeekView();
     }
@@ -103,6 +101,7 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
         });
 
     }
+//        refActiveAppointments.child(Muid).child(sdate).child(wwKey).child(time).setValue(appointment);
 
     public void setList() {
         note.setText(snote);
@@ -122,7 +121,6 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
                                     // Update the text for the matched hour
                                     hours.set(i, "taken");
 
-//                                    if app.cuid eq uid -> show details
                                 }
                             }
                         }
@@ -148,8 +146,13 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
         String sdate = Sdate(date);
         // check double booked
         if (!hour.equals("taken")) {
-            Appointment app = new Appointment(hour, sdate, "lo chrih at dani");
-            refActiveAppointments.child(Muid).child(sdate).child(windowKey).child(hour).setValue(app);
+            Appointment app = new Appointment(hour, sdate,"", "","","","","");
+            Intent intent = new Intent(CalendarClient.this, AppointmentSet.class);
+            intent.putExtra("date",sdate);
+            intent.putExtra("hour",hour);
+            intent.putExtra("windowKey",windowKey);
+            startActivity(intent);
+//            refActiveAppointments.child(Muid).child(sdate).child(windowKey).child(hour).setValue(app);
             setWeekView();
         } else {
             Toast.makeText(CalendarClient.this, "this hour is unavailable", Toast.LENGTH_SHORT).show();

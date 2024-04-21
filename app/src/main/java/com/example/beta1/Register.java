@@ -74,9 +74,9 @@ public class Register extends AppCompatActivity {
             Toast.makeText(Register.this,"email adrss must contain @ and .com<3", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(password.length()<6){
-            Toast.makeText(Register.this, "password must be at list 6 chares",Toast.LENGTH_SHORT).show();
-        return;
+
+        if(phone.length()<8){
+            Toast.makeText(Register.this, "phone number must be at list 8 chares",Toast.LENGTH_SHORT).show();
         }
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -98,7 +98,7 @@ public class Register extends AppCompatActivity {
 
                             finish();
                         } else {
-                            Toast.makeText(Register.this, "reg Failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Register.this, "please check your fields", Toast.LENGTH_SHORT).show();
                         }
 
                     }               });

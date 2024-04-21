@@ -29,14 +29,11 @@ public class MainActivityManicurist extends AppCompatActivity {
     String Sname;
     User user;
     AlertDialog.Builder logoutAlert;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_manicurist);
         welcome = findViewById(R.id.welcomSign);
-
-
 
     }
 
@@ -72,12 +69,7 @@ public class MainActivityManicurist extends AppCompatActivity {
         }}
 
 
-    public void pressed(View view) {
 
-        mAuth.signOut();
-        Intent intent = new Intent(MainActivityManicurist.this,Login.class);
-        startActivity(intent);
-    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.manicurist_menu,menu);

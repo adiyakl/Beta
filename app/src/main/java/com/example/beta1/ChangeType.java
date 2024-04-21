@@ -13,9 +13,19 @@ public class ChangeType {
     public ChangeType() {
     }
 
-    public static String Sdate (LocalDate date){
+    public static String Sdate (LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
         return date.format(formatter);
+    }
+    public static String Odate(String date){
+        StringBuilder str = new StringBuilder();
+        str.append(date.substring(4, 6));
+        str.append(".");
+        str.append(date.substring(2, 4));
+        str.append(".");
+        str.append(date.substring(0, 2));
+
+        return str.toString();
     }
 
 // Method to sort time strings in the format "HHmm"

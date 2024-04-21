@@ -96,7 +96,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
 
     }
     public void setList(){
-
+        Toast.makeText(WeekViewActivity.this,windowKey+"ttt",Toast.LENGTH_SHORT).show();
         note.setText(snote);
         DatabaseReference currentDateRef = refActiveAppointments.child(uid).child(Sdate(selectedDate)).child(windowKey);
         currentDateRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -112,14 +112,12 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                                 // Check if the hour matches the appointment time
                                 if (hours.get(i).equals(app.getTime())) {
                                     // Update the text for the matched hour
-                                    hours.set(i, app.getTime() + "  " + app.getText());
+                                    hours.set(i, app.getTime() + "  " + app.getName());
                                 }
                             }
                         }
                     }
                 } else {
-
-
                 }
 
                 // Update the ListView with the updated hours list
@@ -138,9 +136,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
         String sdate = Sdate(date);
         // check double booked
         if(hour.length()==5){
-            Appointment app = new Appointment(hour, sdate, "lo chrih at dani");
-
-            refActiveAppointments.child(uid).child(sdate).child(windowKey).child(hour).setValue(app);
+            Appointment app = new Appointment(hour, sdate,"", "","","","","");
             setWeekView();
         }
         else {
@@ -161,6 +157,9 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
     public void onWindowLoaded(WorkWindow window) {
         this.hours = window.getPartInWindow();
         this.snote = window.getNote();
+        if(snote.isEmpty()){
+            snote = "no notes at the moment";
+        }
         this.windowKey = window.getwKey();
         setList();
 
@@ -204,7 +203,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                     if (DBWindow != null && !future.isDone()) { // check if future is already completed
                         snote = DBWindow.getNote();
                         hours = DBWindow.getPartInWindow();
-                        windowKey = DBWindow.getwKey();
+                        windowKey =DBWindow.getwKey();
                         future.complete(new WorkWindow(windowKey,snote, hours));
                     } else {
                         if (!future.isDone()) {

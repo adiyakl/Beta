@@ -223,7 +223,7 @@ public void defaultWindow(){
                 else {
                     refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
                     String b = partInWindow.get(0);
-                    String e = partInWindow.get(partInWindow.size()-1);
+                    String e = partInWindow.get(partInWindow.size()-2);
                     Toast.makeText(WorkWeekDefinition.this,"your window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
                 }
             }

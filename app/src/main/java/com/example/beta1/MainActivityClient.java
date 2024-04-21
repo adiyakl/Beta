@@ -30,10 +30,10 @@ public class MainActivityClient extends AppCompatActivity {
     String Sname;
     User user;
     AlertDialog.Builder logoutAlert;
-    public static String uid = mAuth.getCurrentUser().getUid();
-    public static User thisUser ;
+    public static String Cuid = mAuth.getCurrentUser().getUid();
+    public static User thisUser =new User("","","","","","","");
     public static String Muid = "0";
-    public static Business thisbusiness = new Business("","","","","","");
+    public static Business thisbusiness = new Business();
 
 
     @Override
@@ -43,10 +43,9 @@ public class MainActivityClient extends AppCompatActivity {
         welcome = findViewById(R.id.welcomSign);
         getUser();
 
-
     }
     public static void getUser(){
-        DatabaseReference currentuser = refUsers.child(uid);
+        DatabaseReference currentuser = refUsers.child(Cuid);
         currentuser.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -115,17 +114,19 @@ public class MainActivityClient extends AppCompatActivity {
         }}
 
 
-    public void pressed(View view) {
 
-            mAuth.signOut();
-            Intent intent = new Intent(MainActivityClient.this,Login.class);
-            startActivity(intent);
-    }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.client_menu,menu);
         MenuItem item = menu.findItem(R.id.client_main);
         item.setVisible(false);
+        MenuItem i = menu.findItem(R.id.client_calnder);
+        if(thisUser==null){
+            i.setVisible(false);
+        }
+        if(thisUser!=null){
+            i.setVisible(true);
+        }
         this.invalidateOptionsMenu();
         return super.onCreateOptionsMenu(menu);
     }
