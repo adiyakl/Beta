@@ -27,7 +27,7 @@ public class MainActivityManicurist extends AppCompatActivity {
 
     TextView welcome ;
     String Sname;
-    User user;
+    User user = DBref.user;
     AlertDialog.Builder logoutAlert;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,33 +40,14 @@ public class MainActivityManicurist extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("stayConnect", true);
         editor.commit();
+        Sname = user.getName();
+        welcome.setText("hey "+Sname+" !");
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser != null) {
-            String uid = currentUser.getUid();
-            DatabaseReference currentUserRef = refUsers.child(uid);
-            currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        user = dataSnapshot.getValue(User.class);
-                        Sname = user.getName();
-                        welcome.setText("hey "+Sname+" !");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle potential errors here
-                }
-            });
-        }}
+        }
 
 
 

@@ -68,9 +68,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
         bt1.setText("<--");
         bt2.setText("-->");
         note= findViewById(R.id.noteTv);
-        if(currentUser != null){
-            uid = currentUser.getUid();
-        }
+       uid = DBref.uid;
         CalendarUtils.selectedDate = LocalDate.now();
         setWeekView();
     }
@@ -83,145 +81,102 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
-        CompletableFuture.supplyAsync(this::setWindow1)
-                .thenAccept(this::onWindowLoaded);
+        setWindow();
         setList();
         l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arrayAdapter, View view, int i, long l) {
                 String hourFromArray = arrayAdapter.getItemAtPosition(i).toString();
-                setAp(selectedDate, hourFromArray,i );
+//                showApp(selectedDate, hourFromArray,i );
             }
         });
 
     }
-    public void setList(){
-        Toast.makeText(WeekViewActivity.this,windowKey+"ttt",Toast.LENGTH_SHORT).show();
+    public void setList() {
         note.setText(snote);
         DatabaseReference currentDateRef = refActiveAppointments.child(uid).child(Sdate(selectedDate)).child(windowKey);
-        currentDateRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        currentDateRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Iterate over each child of the snapshot
-                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                        Appointment app = childSnapshot.getValue(Appointment.class);
-                        // Check if the appointment date matches the selected date
-                        if (Sdate(selectedDate).equals(app.getDate())) {
-                            for (int i = 0; i < hours.size(); i++) {
-                                // Check if the hour matches the appointment time
-                                if (hours.get(i).equals(app.getTime())) {
-                                    // Update the text for the matched hour
-                                    hours.set(i, app.getTime() + "  " + app.getName());
-                                }
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful() && task.getResult().exists()) {
+                    DataSnapshot ds = task.getResult();
+                    for (DataSnapshot d :ds.getChildren()) {
+                        Appointment app = d.getValue(Appointment.class);
+                        for (int i = 0; i < hours.size(); i++) {
+                            if (hours.get(i).equals(app.getTime())) {
+                                hours.set(i,app.getTime()+":  "+ app.getName());
                             }
                         }
                     }
-                } else {
-                }
 
-                // Update the ListView with the updated hours list
+                }
+                if(!task.getResult().exists()) {
+                    Toast.makeText(WeekViewActivity.this,"no appointments here",Toast.LENGTH_SHORT).show();
+                }
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(WeekViewActivity.this, android.R.layout.simple_list_item_1, hours);
                 l.setAdapter(arrayAdapter);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
     }
 
-    public void setAp (LocalDate date, String hour, int index){
-        String sdate = Sdate(date);
-        // check double booked
-        if(hour.length()==5){
-            Appointment app = new Appointment(hour, sdate,"", "","","","","");
-            setWeekView();
-        }
-        else {
-            Toast.makeText(WeekViewActivity.this, "this hour is unavailable", Toast.LENGTH_SHORT).show();
-        }
-    }
+
 
 
 
     public void onItemClick(int position, LocalDate date) {
         CalendarUtils.selectedDate = date;
         setWeekView();
-        CompletableFuture.supplyAsync(this::setWindow1)
-                .thenAccept(this::onWindowLoaded);
+        setWindow();
 
     }
 
-    public void onWindowLoaded(WorkWindow window) {
-        this.hours = window.getPartInWindow();
-        this.snote = window.getNote();
-        if(snote.isEmpty()){
-            snote = "no notes at the moment";
-        }
-        this.windowKey = window.getwKey();
-        setList();
-
-    }
-
-    public WorkWindow setWindow1() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            uid = currentUser.getUid();
-        }
-        String sdate = Sdate(selectedDate);
-
-        CompletableFuture<WorkWindow> future = new CompletableFuture<>();
-
-        refActiveCalendar.child(uid).child(sdate).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    WorkWindow DBWindow = snapshot.getValue(WorkWindow.class);
-                    if (DBWindow != null) {
-                        snote = DBWindow.getNote();
-                        hours = DBWindow.getPartInWindow();
-                        windowKey = DBWindow.getwKey();
-                        future.complete(new WorkWindow(windowKey,snote, hours));
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                future.completeExceptionally(error.toException());
-            }
-        });
-
-        refActiveCalendar.child(uid).child("DefaultWindow").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+    public void setWindow(){
+        hours.clear();
+        String sdate  = Sdate(selectedDate);
+        refActiveCalendar.child(uid).child(sdate).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (task.isSuccessful()) {
-                    DataSnapshot ds = task.getResult();
-                    WorkWindow DBWindow = ds.getValue(WorkWindow.class);
-                    if (DBWindow != null && !future.isDone()) { // check if future is already completed
-                        snote = DBWindow.getNote();
-                        hours = DBWindow.getPartInWindow();
-                        windowKey =DBWindow.getwKey();
-                        future.complete(new WorkWindow(windowKey,snote, hours));
-                    } else {
-                        if (!future.isDone()) {
-                            future.complete(new WorkWindow("","", new ArrayList<>()));
-                        }
+                    WorkWindow DBWindow = task.getResult().getValue(WorkWindow.class);
+                    if (DBWindow != null) {
+                    snote = DBWindow.getNote();
+                    if(snote.isEmpty()){
+                        snote = "no notes at the moment";
                     }
-                } else {
-                    future.completeExceptionally(task.getException());
+                        hours = DBWindow.getPartInWindow();
+                        windowKey = DBWindow.getwKey();
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(WeekViewActivity.this, android.R.layout.simple_list_item_1, hours);
+                        l.setAdapter(arrayAdapter);
+                        setList();
+                    }
                 }
+                if(!task.getResult().exists()) {
+                    refActiveCalendar.child(uid).child("DefaultWindow").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DataSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                WorkWindow DBWindow = task.getResult().getValue(WorkWindow.class);
+                                if (DBWindow != null) {
+                                    snote = DBWindow.getNote();
+                                    if(snote.isEmpty()){
+                                        snote = "no notes at the moment";
+                                    }
+                                    hours = DBWindow.getPartInWindow();
+                                    windowKey = DBWindow.getwKey();
+                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(WeekViewActivity.this, android.R.layout.simple_list_item_1, hours);
+                                    l.setAdapter(arrayAdapter);
+                                    setList();
+                                }
+                            }
+
+                        }
+                    });
+                }
+
             }
         });
 
-        try {
-            return future.get(); // waits until future is complete
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return new WorkWindow("","", new ArrayList<>()); // or handle exception accordingly
-        }
     }
 
 

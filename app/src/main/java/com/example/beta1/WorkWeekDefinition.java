@@ -52,7 +52,7 @@ public class WorkWeekDefinition extends AppCompatActivity {
     CheckBox cb;
     Button begTime, endTime;
     String SbegTime , SendTime , sdate;
-    private String uid ="0";
+    private String uid =DBref.uid;
     private ArrayList<String> partInWindow = new ArrayList<>();
     private ArrayList<String> NewPartInWindow= new ArrayList<>();
     private WorkWindow window = new WorkWindow("","",new ArrayList<>());
@@ -88,10 +88,6 @@ public class WorkWeekDefinition extends AppCompatActivity {
                 }
             }
         });
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            uid = currentUser.getUid();
-        }
         DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
         currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

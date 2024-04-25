@@ -38,7 +38,7 @@ public class BusinessEditing extends AppCompatActivity {
     private Switch sactive;
     String name, adress, phone,active, services;
     Button update;
-    private String uid;
+    private String uid = DBref.uid;
     Business business;
     AlertDialog.Builder logoutAlert;
     @Override
@@ -69,13 +69,6 @@ public class BusinessEditing extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            uid = currentUser.getUid();
-        }
-        else{
-            Toast.makeText(BusinessEditing.this,"current user is null",Toast.LENGTH_SHORT).show();
-        }
         showData();
         update.setOnClickListener(new View.OnClickListener() {
             @Override

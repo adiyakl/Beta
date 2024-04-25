@@ -15,7 +15,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 public class DBref {
     public static String uid;
-//    public static User user = new User("","","","","","","");
     public static User user;
     public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public static FirebaseDatabase FBDB = FirebaseDatabase.getInstance();
