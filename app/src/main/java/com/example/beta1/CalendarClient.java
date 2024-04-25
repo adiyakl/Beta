@@ -9,10 +9,10 @@ import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
 import static com.example.beta1.DBref.refUsers;
-import static com.example.beta1.MainActivityClient.thisUser;
 import static com.example.beta1.MainActivityClient.thisbusiness;
 
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -55,12 +55,12 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
     private RecyclerView calendarRecyclerView;
     private ListView l;
     private String busnam  = "0";
-    public ArrayList<String> hours = new ArrayList<>();
+    public static ArrayList<String> hours = new ArrayList<>();
     Button bt1, bt2;
     TextView note,headline;
-    private String snote = "no notes at the moment";
-    private String windowKey = "DefaultWindow";
-
+    public static String snote = "no notes at the moment";
+    public static String windowKey = "DefaultWindow";
+    private ArrayAdapter<String> arrayAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +74,8 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
         bt2.setText("-->");
         note = findViewById(R.id.noteTv);
         headline =findViewById(R.id.headline);
+        arrayAdapter = new ArrayAdapter<>(CalendarClient.this, android.R.layout.simple_list_item_1, hours);
+        l.setAdapter(arrayAdapter);
         Muid =MainActivityClient.Muid;
         busnam = thisbusiness.getName();
         headline.setText(busnam+"  "+"calendar!");
@@ -89,9 +91,11 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
         calendarRecyclerView.setLayoutManager(layoutManager);
         calendarRecyclerView.setAdapter(calendarAdapter);
+//        setWindow();
+        setWindow1();
         CompletableFuture.supplyAsync(this::setWindow1)
                 .thenAccept(this::onWindowLoaded);
-        setList();
+//        setList();
         l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arrayAdapter, View view, int i, long l) {
@@ -101,52 +105,41 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
         });
 
     }
-//        refActiveAppointments.child(Muid).child(sdate).child(wwKey).child(time).setValue(appointment);
 
     public void setList() {
         note.setText(snote);
-        DatabaseReference currentDateRef = refActiveAppointments.child(Muid).child(Sdate(selectedDate)).child(windowKey);
-        currentDateRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference currentDateRef = refActiveAppointments.child(Muid).child(Sdate(selectedDate));
+        currentDateRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Iterate over each child of the snapshot
-                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                        Appointment app = childSnapshot.getValue(Appointment.class);
-                        // Check if the appointment date matches the selected date
-                        if (Sdate(selectedDate).equals(app.getDate())) {
-                            for (int i = 0; i < hours.size(); i++) {
-                                // Check if the hour matches the appointment time
-                                if (hours.get(i).equals(app.getTime())) {
-                                    // Update the text for the matched hour
-                                    hours.set(i, "taken");
-
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if(task.isSuccessful()){
+                    DataSnapshot ds = task.getResult();
+                    for (DataSnapshot workwind : ds.getChildren()) {
+                        for (DataSnapshot appo : workwind.getChildren()) {
+                            Appointment app = appo.getValue(Appointment.class);
+                            if (Sdate(selectedDate).equals(app.getDate())) {
+                                for (int i = 0; i < hours.size(); i++) {
+                                    // Check if the hour matches the appointment time
+                                    if (hours.get(i).equals(app.getTime())) {
+                                        // Update the text for the matched hour
+                                        hours.set(i, "taken");
+                                    }
                                 }
                             }
                         }
+
                     }
-                } else {
-
-
+                    arrayAdapter.notifyDataSetChanged();
                 }
-
-                // Update the ListView with the updated hours list
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(CalendarClient.this, android.R.layout.simple_list_item_1, hours);
-                l.setAdapter(arrayAdapter);
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
             }
         });
+
     }
 
     public void setAp(LocalDate date, String hour, int index) {
         String sdate = Sdate(date);
         // check double booked
         if (!hour.equals("taken")) {
-            Appointment app = new Appointment(hour, sdate,"", "","","","","");
             Intent intent = new Intent(CalendarClient.this, AppointmentSet.class);
             intent.putExtra("date",sdate);
             intent.putExtra("hour",hour);
@@ -163,6 +156,7 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
     public void onItemClick(int position, LocalDate date) {
         CalendarUtils.selectedDate = date;
         setWeekView();
+//        setWindow();
         CompletableFuture.supplyAsync(this::setWindow1)
                 .thenAccept(this::onWindowLoaded);
 
@@ -171,28 +165,64 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
     public void onWindowLoaded(WorkWindow window) {
         this.hours = window.getPartInWindow();
         this.snote = window.getNote();
-        if(snote.isEmpty()){
-            this.snote = "no notes at the moment";
-        }
+//        if(snote.isEmpty()){
+//            this.snote = "no notes at the moment";
+//        }
         this.windowKey = window.getwKey();
         setList();
 
     }
-
+//public void setWindow(){
+//    final ProgressDialog pd = ProgressDialog.show(CalendarClient.this, "Loading window", "Loading...", true);
+//    hours.clear();
+//    String sdate  = Sdate(selectedDate);
+//    DatabaseReference currentCal = refActiveCalendar.child(Muid);
+//    currentCal.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//        @Override
+//        public void onComplete(@NonNull Task<DataSnapshot> task) {
+//            DataSnapshot ds = task.getResult();
+//            for (DataSnapshot dates :ds.getChildren()){
+//                String d = dates.getKey();
+//                if(d.equals("DefaultWindow")){
+//                    Toast.makeText(CalendarClient.this,"def",Toast.LENGTH_LONG).show();
+//
+//                }
+//                WorkWindow DBWindow = dates.getValue(WorkWindow.class);
+//                if (DBWindow != null) {
+////                    snote = DBWindow.getNote();
+////                    if(snote.isEmpty()){
+////                        snote = "no notes at the moment";
+////                    }
+//                    hours = DBWindow.getPartInWindow();
+//                    windowKey = DBWindow.getwKey();
+//                    arrayAdapter.notifyDataSetChanged();
+//                    setList();
+//                    snote = DBWindow.toString();
+//                    pd.dismiss();
+//                }
+//            }
+//
+//        }
+//    });
+//}
     public WorkWindow setWindow1() {
+        final ProgressDialog pd = ProgressDialog.show(CalendarClient.this, "Loading window", "Loading...", true);
+        hours.clear();
         String sdate = Sdate(selectedDate);
-
+        Toast.makeText(CalendarClient.this,sdate,Toast.LENGTH_LONG).show();
         CompletableFuture<WorkWindow> future = new CompletableFuture<>();
-
         refActiveCalendar.child(Muid).child(sdate).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     WorkWindow DBWindow = snapshot.getValue(WorkWindow.class);
                     if (DBWindow != null) {
-                        snote = DBWindow.getNote();
                         hours = DBWindow.getPartInWindow();
                         windowKey = DBWindow.getwKey();
+                        arrayAdapter.notifyDataSetChanged();
+                        snote = DBWindow.toString();
+
+                        pd.dismiss();
                         future.complete(new WorkWindow(windowKey, snote, hours));
                     }
                 }
@@ -211,9 +241,12 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
                     DataSnapshot ds = task.getResult();
                     WorkWindow DBWindow = ds.getValue(WorkWindow.class);
                     if (DBWindow != null && !future.isDone()) { // check if future is already completed
-                        snote = DBWindow.getNote();
                         hours = DBWindow.getPartInWindow();
                         windowKey = DBWindow.getwKey();
+                        arrayAdapter.notifyDataSetChanged();
+                        snote = DBWindow.toString();
+                        Toast.makeText(CalendarClient.this,"def",Toast.LENGTH_LONG).show();
+                        pd.dismiss();
                         future.complete(new WorkWindow(windowKey, snote, hours));
                     } else {
                         if (!future.isDone()) {

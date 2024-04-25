@@ -30,6 +30,10 @@ public class WorkWindow {
         this.wKey = wKey;
     }
 
+    @Override
+    public String toString() {
+        return  "wKey= " + wKey  + ", note= " + note + ", partInWindow= " + partInWindow ;
+    }
 
     public String getNote() {
         return note;

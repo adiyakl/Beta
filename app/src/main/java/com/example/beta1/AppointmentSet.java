@@ -2,9 +2,8 @@ package com.example.beta1;
 
 import static com.example.beta1.ChangeType.Odate;
 import static com.example.beta1.DBref.refActiveAppointments;
-import static com.example.beta1.MainActivityClient.Cuid;
+//import static com.example.beta1.MainActivityClient.Cuid;
 import static com.example.beta1.MainActivityClient.Muid;
-import static com.example.beta1.MainActivityClient.thisUser;
 import static com.example.beta1.MainActivityClient.thisbusiness;
 
 import android.app.Activity;
@@ -80,7 +79,7 @@ public class AppointmentSet extends AppCompatActivity {
     public void setApp(View view) {
         imageUri = getImageUriString();
         notes = String.valueOf(req.getText());
-        Appointment appointment =new Appointment(sdate,time,thisUser.getName(),Cuid,Muid,notes,"HAPPENING",imageUri);
+        Appointment appointment =new Appointment(sdate,time,DBref.user.getName(),DBref.uid,Muid,notes,"HAPPENING",imageUri);
         refActiveAppointments.child(Muid).child(sdate).child(wwKey).child(time).setValue(appointment);
         Intent intent = new Intent(this,MainActivityClient.class);
         startActivity(intent);

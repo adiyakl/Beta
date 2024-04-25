@@ -28,10 +28,8 @@ public class MainActivityClient extends AppCompatActivity {
 
     TextView welcome ;
     String Sname;
-    User user;
+    private User user = DBref.user;
     AlertDialog.Builder logoutAlert;
-    public static String Cuid = mAuth.getCurrentUser().getUid();
-    public static User thisUser =new User("","","","","","","");
     public static String Muid = "0";
     public static Business thisbusiness = new Business();
 
@@ -41,27 +39,11 @@ public class MainActivityClient extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_client);
         welcome = findViewById(R.id.welcomSign);
-        getUser();
+        if (user!=null) {
+            Muid = user.getLinked();
+            getBusiness();
+        }
 
-    }
-    public static void getUser(){
-        DatabaseReference currentuser = refUsers.child(Cuid);
-        currentuser.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    thisUser = snapshot.getValue(User.class);
-                    if(thisUser!=null) {
-                        Muid = thisUser.getLinked();
-                        getBusiness();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
     }
     public static void getBusiness(){
         if(Muid!=null) {
@@ -84,34 +66,15 @@ public class MainActivityClient extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
         editor.putBoolean("stayConnect", true);
         editor.commit();
-
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser != null) {
-            String uid = currentUser.getUid();
-            DatabaseReference currentUserRef = refUsers.child(uid);
-            currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        user = dataSnapshot.getValue(User.class);
-                        Sname = user.getName();
-                        welcome.setText("hello "+Sname+" !");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle potential errors here
-                }
-            });
-        }}
+        if (user!=null) {
+            Sname = user.getName();
+            welcome.setText("hello " + Sname + " !");
+        }
+}
 
 
 
@@ -121,10 +84,10 @@ public class MainActivityClient extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.client_main);
         item.setVisible(false);
         MenuItem i = menu.findItem(R.id.client_calnder);
-        if(thisUser==null){
+        if(user==null){
             i.setVisible(false);
         }
-        if(thisUser!=null){
+        if(user!=null){
             i.setVisible(true);
         }
         this.invalidateOptionsMenu();

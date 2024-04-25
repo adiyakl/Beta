@@ -1,8 +1,10 @@
 package com.example.beta1;
 
+import static com.example.beta1.DBref.FBDB;
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refUsers;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -33,8 +35,8 @@ public class Login extends AppCompatActivity {
     CheckBox stayco;
     boolean stayCon;
     DataSnapshot dataSnapshot;
+    private User user = new User("","","","","","","");
     String email1, password1;
-    User user;
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +48,15 @@ public class Login extends AppCompatActivity {
         bt1 = findViewById(R.id.button1);
         mAuth = FirebaseAuth.getInstance();
         stayCon = false;
+
     }
 
 
     public void log(View view) {
         email1 = eTemail.getText().toString();
         password1 = eTpass.getText().toString();
-        if(email1.isEmpty()||password1.isEmpty()){
-            Toast.makeText(Login.this,"please enter fileds<3",Toast.LENGTH_SHORT).show();
+        if (email1.isEmpty() || password1.isEmpty()) {
+            Toast.makeText(Login.this, "please enter fileds<3", Toast.LENGTH_SHORT).show();
             return;
         }
         mAuth.signInWithEmailAndPassword(email1, password1)
@@ -61,101 +64,77 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
-                            SharedPreferences.Editor editor=settings.edit();
-                            editor.putBoolean("stayConnect",stayco.isChecked());
+                            SharedPreferences settings = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putBoolean("stayConnect", stayco.isChecked());
                             editor.commit();
                             FirebaseUser currentUser = mAuth.getCurrentUser();
                             if (currentUser != null) {
-                                String uid = currentUser.getUid();
-                                DatabaseReference currentUserRef = refUsers.child(uid);
-                                currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        // Check if the snapshot exists
-                                        if (dataSnapshot.exists()) {
-                                            // Get the user object
-                                            user = dataSnapshot.getValue(User.class);
-                                            // Access the phone and password fields
-
-                                            if (user.getmOrC().equals("M")) {
-                                                Intent intent = new Intent(Login.this, MainActivityManicurist.class);
-                                                startActivity(intent);
-                                                finish();
-                                            }
-
-                                            else if(user.getmOrC().equals("C")){
-                                                Intent intent = new Intent(Login.this, MainActivityClient.class);
-                                                startActivity(intent);
-                                                finish();
-                                            }
-
-                                        }
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        // Handle potential errors here
-                                    }
-                                });
+                                DBref.getUserUid(currentUser);
+                                user = DBref.user;
+                                if (user.getmOrC().equals("M")) {
+                                    Intent intent = new Intent(Login.this, MainActivityManicurist.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else if (user.getmOrC().equals("C")) {
+                                    Intent intent = new Intent(Login.this, MainActivityClient.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
                             }
-
                         } else {
-                            Toast.makeText(Login.this, "Login Failed, please check your fields", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Login Failed, consider register...", Toast.LENGTH_SHORT).show();
+
                         }
                     }
                 });
     }
 
 
-    protected void onStart() {
-        super.onStart();
-        SharedPreferences settings = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
-        Boolean isChecked = settings.getBoolean("stayConnect", false);
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String uid = currentUser.getUid();
-            DatabaseReference currentUserRef = refUsers.child(uid);
-            currentUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        user = dataSnapshot.getValue(User.class);
-                        if (isChecked && mAuth.getCurrentUser() != null) {
-                        if (user.getmOrC().equals("M")) {
-                            Intent si = new Intent(Login.this, MainActivityManicurist.class);
-                                si.putExtra("newuser", false);
-                                startActivity(si);
-                                finish();
+                    protected void onStart() {
+                        super.onStart();
+                        SharedPreferences settings = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
+                        Boolean isChecked = settings.getBoolean("stayConnect", false);
+                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                        if (isChecked && currentUser != null) {
+                            DBref.getUserUid(currentUser);
+                            final ProgressDialog pd = ProgressDialog.show(Login.this, "Login", "Connecting...", true);
+                            refUsers.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>()
+                            {
+                                @Override
+                                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                    if(task.isSuccessful()){
+                                        pd.dismiss();
+                                        User user = task.getResult().getValue(User.class);
+                                        if (user.getmOrC().equals("M")) {
+                                            Intent si = new Intent(Login.this, MainActivityManicurist.class);
+                                            si.putExtra("newuser", false);
+                                            startActivity(si);
+                                            finish();
 
-                        } else if (user.getmOrC().equals("C")){
-                            Intent si = new Intent(Login.this, MainActivityClient.class);
-                            si.putExtra("newuser", false);
-                            startActivity(si);
-                            finish();
-                        }
-                        }
+                                        } else if (user.getmOrC().equals("C")) {
+                                            Intent si = new Intent(Login.this, MainActivityClient.class);
+                                            si.putExtra("newuser", false);
+                                            startActivity(si);
+                                            finish();
+                                        } else {
+                                            Toast.makeText(Login.this, user.getmOrC() ,Toast.LENGTH_SHORT).show();
 
+                                        }
+                                    }
+                                }
+                            });
+                    }}
+
+                    protected void onPause() {
+                        super.onPause();
+                        if (stayCon) finish();
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle potential errors here
-                }
-            });
-        }
-
-    }
-    protected void onPause() {
-        super.onPause();
-        if (stayCon) finish();
-    }
-    public void goToRegister(View view) {
-        Intent intent = new Intent(Login.this, Register.class);
-        startActivity(intent);
-    }
+                    public void goToRegister(View view) {
+                        Intent intent = new Intent(Login.this, Register.class);
+                        startActivity(intent);
+                    }
 
 
 

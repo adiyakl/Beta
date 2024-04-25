@@ -1,12 +1,13 @@
 package com.example.beta1;
 
+import static com.example.beta1.DBref.FBDB;
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
 import static com.example.beta1.DBref.refUsers;
-import static com.example.beta1.MainActivityClient.thisUser;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,6 +38,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -50,11 +52,9 @@ public class ChoosingABusiness extends AppCompatActivity {
     private ArrayList<Business> businesses = new ArrayList<>();
     public static String businessName ="";
     TextView busName,busServ,busAdres,busPhone,busMani, loadingIcon;
-    private Business b = new Business("","","","","","");
-    static User u;
-    boolean showingLoad = false;
-    private static boolean clicked =false;
-    private String uid = "0";
+    private Business b;
+    private User Muser;
+    private User user = DBref.user;
     private  String linkUid;
     Button bt;
 
@@ -69,91 +69,61 @@ public class ChoosingABusiness extends AppCompatActivity {
         busAdres = findViewById(R.id.busAddre);
         busMani = findViewById(R.id.busMani);
         bt = findViewById(R.id.select);
-        loadingIcon = findViewById(R.id.loading);
-        loadingIcon.setText("Loding...");
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(showingLoad ){
-                    Toast.makeText(ChoosingABusiness.this,"please wait for businesses to show up",Toast.LENGTH_SHORT).show();
-                    return;
+                if(b!=null) {
+                    setLinked1();
+                    Toast.makeText(ChoosingABusiness.this,"your manicurist is now: "+b.getName(),Toast.LENGTH_SHORT).show();
                 }
-                if(clicked ==false){
-                    Toast.makeText(ChoosingABusiness.this,"please choose a business",Toast.LENGTH_SHORT).show();
-                    return;
+                else {
+                    Toast.makeText(ChoosingABusiness.this,"please choose a business first",Toast.LENGTH_SHORT).show();
                 }
-                setLinked1();
             }
         });
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Business b = businesses.get(i);
+                b = businesses.get(i);
                 linkUid = b.getUid();
                 bringData(b);
-                clicked = true;
             }
         });
         createList();
     }
 
             public void setLinked1(){
-                FirebaseUser currentUser = mAuth.getCurrentUser();
-                if(currentUser != null){
-                    uid = currentUser.getUid();
-                }
-                refUsers.child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            User user = snapshot.getValue(User.class);
-                            user.setLinked(linkUid);
-                            refUsers.child(uid).setValue(user);
-
-                            Toast.makeText(ChoosingABusiness.this,"updated",Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(ChoosingABusiness.this,MainActivityClient.class);
-                            startActivity(intent);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                user.setLinked(linkUid);
+                refUsers.setValue(user);
+                Toast.makeText(ChoosingABusiness.this,"updated",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ChoosingABusiness.this,MainActivityClient.class);
+                startActivity(intent);
             }
 
             public void bringData(Business b) {
-
                 busName.setText(b.getName());
                 busPhone.setText(b.getPhone());
                 busAdres.setText(b.getAdress());
                 busServ.setText(b.getServices());
-
-                refUsers.child(b.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                refUsers = FBDB.getReference("Users");
+                DatabaseReference Muserref = refUsers.child(b.getUid());
+                Muserref.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            u = snapshot.getValue(User.class);
-                            if (u != null) {
-                                busMani.setText(u.getName());
-                            }
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        if(task.isSuccessful()){
+                            Muser = task.getResult().getValue(User.class);
+                            if(Muser!=null)
+                                busMani.setText(Muser.getName());
                         }
                     }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        // Handle error
-                    }
                 });
+                DBref.getUserUid(mAuth.getCurrentUser());
             }
 
 
     public void createList() {
-
-        loadingIcon.setVisibility(View.VISIBLE);
-        showingLoad =true;
-            refActiveBusiness.addListenerForSingleValueEvent(new ValueEventListener() {
+        final ProgressDialog pd = ProgressDialog.show(ChoosingABusiness.this, "Business List", "Loading...", true);
+        refActiveBusiness.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
@@ -166,8 +136,7 @@ public class ChoosingABusiness extends AppCompatActivity {
                         }
 
                     }
-                    loadingIcon.setVisibility(View.GONE);
-                    showingLoad =false;
+                    pd.dismiss();
                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(ChoosingABusiness.this, android.R.layout.simple_list_item_1, businessesList);
                     list.setAdapter(arrayAdapter);
                 }
