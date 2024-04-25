@@ -1,17 +1,16 @@
 package com.example.beta1;
 
 public class Appointment {
-    private String time, date,name, Cuid,Muid,requests, meetingStatus ,imageURL;
+    private String time, date,name, Cuid,Muid,requests;
 
-    public Appointment(String time, String date, String name, String cuid, String muid, String requests, String meetingStatus, String imageURL) {
+    public Appointment(String time, String date, String name, String cuid, String muid, String requests) {
         this.time = time;
         this.date = date;
         this.name = name;
         Cuid = cuid;
         Muid = muid;
         this.requests = requests;
-        this.meetingStatus = meetingStatus;
-        this.imageURL = imageURL;
+
     }
 
     public String getName() {
@@ -66,19 +65,5 @@ public class Appointment {
         this.requests = requests;
     }
 
-    public String getMeetingStatus() {
-        return meetingStatus;
-    }
 
-    public void setMeetingStatus(String meetingStatus) {
-        this.meetingStatus = meetingStatus;
-    }
-
-    public String getImageURL() {
-        return imageURL;
-    }
-
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
-    }
 }

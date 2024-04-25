@@ -1,7 +1,6 @@
 package com.example.beta1;
 
 
-import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
@@ -13,6 +12,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 public class DBref {
     public static String uid;
     public static User user;
@@ -23,6 +25,8 @@ public class DBref {
     public static DatabaseReference refOffBusiness = FBDB.getReference("Inactive businesses");
     public static DatabaseReference refActiveCalendar = FBDB.getReference("Active calendars");
     public static DatabaseReference refActiveAppointments = FBDB.getReference("Appointments");
+    public static FirebaseStorage FBST = FirebaseStorage.getInstance();
+    public static StorageReference refPic = FBST.getReference();
     public static void getUserUid(FirebaseUser fbUser){
     uid = fbUser.getUid();
     refUsers = FBDB.getReference("Users").child(uid);

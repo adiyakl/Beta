@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".AppointmentSet">
+    tools:context=".AppDetails">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,20 +31,19 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Business name"
+            android:text="Client name"
             android:textAlignment="center"
             android:textSize="34sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/editTextText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
             android:gravity="center"
             android:inputType="text"
-            android:text="Add in a picture of selected design"
+            android:text="selected design:"
             android:textSize="24sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -66,53 +65,15 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:onClick="camera"
-                android:text="Camera"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:layout_weight="1"
-                android:onClick="gallery"
-                android:text="Gallery"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:orientation="vertical">
 
-            <EditText
+            <TextView
                 android:id="@+id/notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:hint="Special requests"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <CheckBox
-                android:id="@+id/aCb"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="Let me know half an hour before"
+                android:text="no special requests"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -123,8 +84,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="30dp"
-                android:onClick="setApp"
-                android:text="SET"
+                android:onClick="close"
+                android:text="close"
                 android:textSize="34sp"
                 android:textStyle="bold" />
         </LinearLayout>

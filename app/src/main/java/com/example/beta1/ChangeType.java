@@ -50,9 +50,10 @@ public class ChangeType {
     return str;
     }
 
-    public static String STime (LocalDate date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        return date.format(formatter);
+    public static String STime (String date){
+
+        return date.substring(0,5);
+
     }
 
 }

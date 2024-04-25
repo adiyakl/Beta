@@ -34,7 +34,6 @@ public class Login extends AppCompatActivity {
     Button bt1;
     CheckBox stayco;
     boolean stayCon;
-    DataSnapshot dataSnapshot;
     private User user = new User("","","","","","","");
     String email1, password1;
     private FirebaseAuth mAuth;

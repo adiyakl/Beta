@@ -4,6 +4,7 @@ import static com.example.beta1.CalendarUtils.daysInWeekArray;
 import static com.example.beta1.CalendarUtils.monthYearFromDate;
 import static com.example.beta1.CalendarUtils.selectedDate;
 import static com.example.beta1.ChangeType.FBtoString;
+import static com.example.beta1.ChangeType.STime;
 import static com.example.beta1.ChangeType.Sdate;
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveAppointments;
@@ -86,8 +87,16 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
         l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arrayAdapter, View view, int i, long l) {
-                String hourFromArray = arrayAdapter.getItemAtPosition(i).toString();
-//                showApp(selectedDate, hourFromArray,i );
+                if(hours.get(i).length()>5) {
+                    Intent intent = new Intent(WeekViewActivity.this, AppDetails.class);
+                    intent.putExtra("from", WeekViewActivity.class);
+                    intent.putExtra("time", STime(hours.get(i)));
+                    intent.putExtra("windowKey", windowKey);
+                    startActivity(intent);
+                }
+                else {
+                    Toast.makeText(WeekViewActivity.this,"no appointment at this time",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

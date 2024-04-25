@@ -1,18 +1,23 @@
 package com.example.beta1;
 
+import static com.example.beta1.CalendarUtils.selectedDate;
 import static com.example.beta1.ChangeType.Odate;
+import static com.example.beta1.ChangeType.Sdate;
 import static com.example.beta1.DBref.refActiveAppointments;
 //import static com.example.beta1.MainActivityClient.Cuid;
+import static com.example.beta1.DBref.refPic;
 import static com.example.beta1.MainActivityClient.Muid;
 import static com.example.beta1.MainActivityClient.thisbusiness;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.EditText;
@@ -20,50 +25,54 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.core.content.FileProvider;
 
-import com.google.firebase.database.DatabaseReference;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 public class AppointmentSet extends AppCompatActivity {
-    TextView dateAndDay,bName;
+    TextView dateAndDay, bName;
     EditText req;
     private String sdate = " ";
-    private String time=" ";
-    private String Bname =thisbusiness.getName();
+    private String time = " ";
+    private String Bname = thisbusiness.getName();
     private ImageView iv;
-    private String imageUri, notes, wwKey;
-
-
+    private String CorG;
+    private String imageUri, notes, wwKey, date;
+    private String currentPath;
+    private StorageReference refSto;
+    private static Uri file;
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;//id the permission
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     private static final int REQUEST_READ_EXTERNAL_STORAGE_PERMISSION = 3;
     private static final int REQUEST_PICK_IMAGE = 4;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appointment_set);
         dateAndDay = findViewById(R.id.Atime);
-        bName = (findViewById(R.id.businName));
+        bName = (findViewById(R.id.ClientName));
         req = findViewById(R.id.notes);
         iv = findViewById(R.id.image);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-             sdate = extras.getString("date");
-             time = extras.getString("hour");
-             wwKey = extras.getString("windowKey");
+            sdate = extras.getString("date");
+            time = extras.getString("hour");
+            wwKey = extras.getString("windowKey");
         }
-        dateAndDay.setText(Odate(sdate)+" at "+time);
+        dateAndDay.setText(Odate(sdate) + " at " + time);
         bName.setText(thisbusiness.getName());
 
         // Request camera and storage permissions if not granted
@@ -77,11 +86,16 @@ public class AppointmentSet extends AppCompatActivity {
 
 
     public void setApp(View view) {
-        imageUri = getImageUriString();
+        if (CorG.equals("G")) {
+            uplodegal();
+        }
+        if (CorG.equals("C")) {
+            uplodecam();
+        }
         notes = String.valueOf(req.getText());
-        Appointment appointment =new Appointment(time,sdate,DBref.user.getName(),DBref.uid,Muid,notes,"HAPPENING",imageUri);
+        Appointment appointment = new Appointment(time, sdate, DBref.user.getName(), DBref.uid, Muid, notes);
         refActiveAppointments.child(Muid).child(sdate).child(wwKey).child(time).setValue(appointment);
-        Intent intent = new Intent(this,MainActivityClient.class);
+        Intent intent = new Intent(this, MainActivityClient.class);
         startActivity(intent);
     }
 
@@ -100,6 +114,7 @@ public class AppointmentSet extends AppCompatActivity {
             }
         }
     }
+
     // Handle activity result (image capture or image pick from gallery)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data_back) {
@@ -107,41 +122,96 @@ public class AppointmentSet extends AppCompatActivity {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
             Bundle extras = data_back.getExtras();
             if (extras != null) {
+                CorG = "C";
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 iv.setImageBitmap(imageBitmap);
             }
+            else {
+                Toast.makeText(this, "No Image was selected", Toast.LENGTH_LONG).show();
+            }
         }
+
         if (requestCode == REQUEST_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
             if (data_back != null) {
-                Uri imageUri = data_back.getData();
-                iv.setImageURI(imageUri);
+                CorG = "G";
+                file = data_back.getData();
+                iv.setImageURI(file);
             }
+            else {
+                Toast.makeText(this, "No Image was selected", Toast.LENGTH_LONG).show();
+            }
+
         }
     }
-    // Method to get the URI of the image
-    private String getImageUriString() {
-        // Get the URI of the image from ImageView
-        if (iv.getDrawable() instanceof BitmapDrawable) {
-            BitmapDrawable drawable = (BitmapDrawable) iv.getDrawable();
-            Bitmap bitmap = drawable.getBitmap();
-            // Convert Bitmap to URI
-            String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Image", null);
-            if (path != null) {
-                return path;
-            } else {
-                return "";
-            }
-        }
-        return "";
+
+    private void uplodecam(){
+        final ProgressDialog pd = ProgressDialog.show(this, "Upload image", "Uploading...", true);
+        date = Sdate(selectedDate);
+        refSto = refPic.child(Muid).child(date+time + ".jpg");
+        Bitmap imageBitmap = BitmapFactory.decodeFile(currentPath);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        if(imageBitmap!=null)
+            imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        refSto.putBytes(data)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        pd.dismiss();
+                        Toast.makeText(AppointmentSet.this, "Image Uploaded", Toast.LENGTH_LONG).show();
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        pd.dismiss();
+                        Toast.makeText(AppointmentSet.this, "Upload failed", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
+    private void uplodegal() {
+        final ProgressDialog pd = ProgressDialog.show(this, "Upload image", "Uploading...", true);
+        refSto = refPic.child(Muid).child(sdate + time + ".jpg");
+        refSto.putFile(file)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        pd.dismiss();
+                        Toast.makeText(AppointmentSet.this, "Image Uploaded", Toast.LENGTH_LONG).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        pd.dismiss();
+                        Toast.makeText(AppointmentSet.this, "Upload failed", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+}
+
 //    open camera
     public void camera(View view) {
-        Intent takePicIntent = new Intent();
-        takePicIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePicIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePicIntent, REQUEST_IMAGE_CAPTURE);
+        String filename = "tempfile";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        try {
+            File imgFile = File.createTempFile(filename,".jpg",storageDir);
+            currentPath = imgFile.getAbsolutePath();
+//            Uri imageUri = FileProvider.getUriForFile(AppointmentSet.this,"com.example.beta1.fileprovider",imgFile);
+            Intent takePicIntent = new Intent();
+            takePicIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+//            takePicIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,imageUri);
+            if (takePicIntent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(takePicIntent, REQUEST_IMAGE_CAPTURE );
+            }
+        } catch (IOException e) {
+            Toast.makeText(AppointmentSet.this,"Failed to create temporary file",Toast.LENGTH_LONG);
+            throw new RuntimeException(e);
         }
     }
+
 //  open gallery
     public void gallery(View view) {
         Intent intent = new Intent();
