@@ -116,8 +116,14 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
                         Appointment app = d.getValue(Appointment.class);
                         for (int i = 0; i < hours.size(); i++) {
                             if (hours.get(i).equals(app.getTime())) {
-                                hours.set(i, "taken");
+                                if(app.getCuid().equals(DBref.uid)){
+                                    hours.set(i, "your appointment!");
+                                }
+                                else {
+                                    hours.set(i, "taken");
+                                }
                             }
+
                         }
                     }
 

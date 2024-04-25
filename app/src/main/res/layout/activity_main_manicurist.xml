@@ -12,26 +12,48 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <EditText
+        <TextView
             android:id="@+id/welcomSign"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:ems="10"
-            android:inputType="text"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textSize="34sp"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/wind"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:ems="10"
+            android:text="window"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="25sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:gravity="center"
+        android:layout_gravity="center_vertical"
         android:orientation="vertical">
-
-
+        <ListView
+            android:id="@+id/l"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:layout_weight="1"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="15.0sp"
+            android:scrollbars="vertical" />
     </LinearLayout>
 
 </LinearLayout>

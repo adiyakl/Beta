@@ -106,14 +106,11 @@ public class AppDetails extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     pd.dismiss();
-                    Toast.makeText(AppDetails.this, "Image download failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AppDetails.this, "no image added", Toast.LENGTH_LONG).show();
                 }
             });
         }
     public void close(View view) {
-        if(from.equals(WeekViewActivity.class)) {
-            Intent intent = new Intent(this,WeekViewActivity.class );
-            startActivity(intent);
-        }//fin
+        finish();
     }
 }
