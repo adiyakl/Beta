@@ -1,6 +1,10 @@
 package com.example.beta1;
 
+import static com.example.beta1.ChangeType.Odate;
+import static com.example.beta1.ChangeType.Sdate;
+import static com.example.beta1.ChangeType.isAfterOrToday;
 import static com.example.beta1.DBref.mAuth;
+import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refUsers;
 
@@ -8,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,20 +22,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
+
 public class MainActivityClient extends AppCompatActivity {
 
-    TextView welcome ;
+    TextView welcome , todayDate, appInfo, appM;
     String Sname;
     private User user = DBref.user;
     AlertDialog.Builder logoutAlert;
-    public static String Muid = "0";
+    public static String Muid = "0", sdate,appDate="",appTime="",appMani ="";
+    private LocalDate date=LocalDate.now();
     public static Business thisbusiness = new Business();
 
 
@@ -39,11 +50,67 @@ public class MainActivityClient extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_client);
         welcome = findViewById(R.id.welcomSign);
+        appInfo = findViewById(R.id.appDate);
+        todayDate = findViewById(R.id.todayDate);
+        appM =findViewById(R.id.appM);
         if (user!=null) {
             Muid = user.getLinked();
             getBusiness();
         }
+        sdate = Sdate(date);
+        todayDate.setText(Odate(sdate));
+        getApp();
 
+
+    }
+
+    public void getApp(){
+        final ProgressDialog pd = ProgressDialog.show(this, "Loading data", "Loading...", true);
+        refActiveAppointments.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if(task.isSuccessful()&&task.getResult().exists()) {
+                    DataSnapshot dataSnapshot = task.getResult();
+                    for(DataSnapshot Muids : dataSnapshot.getChildren()) {
+                        for (DataSnapshot dates : Muids.getChildren()) {
+                                for (DataSnapshot wind : dates.getChildren()) {
+                                    String adate = dates.getKey().toString();
+                                    Toast.makeText(MainActivityClient.this, adate, Toast.LENGTH_SHORT).show();
+                                    if (isAfterOrToday(adate, date)) {
+                                    for (DataSnapshot times : wind.getChildren()) {
+                                        Appointment app = times.getValue(Appointment.class);
+                                        if (app.getCuid().equals(DBref.uid)) {
+                                            appDate = app.getDate();
+                                            appTime = app.getTime();
+                                            appMani =app.getMuid();
+                                            getBusinessName();
+                                        }
+                                        else {
+                                            appDate = "no appointments in the future";
+                                            appTime = ":(";
+
+                                        }
+                                        appInfo.setText(Odate(appDate)+"  "+appTime);
+                                        pd.dismiss();
+                                    }
+                                }
+                                    else {
+                                        appDate = "no appointments in the future";
+                                        appTime = ":(";
+                                        appInfo.setText(appDate+"  "+appTime);
+                                        pd.dismiss();
+                                    }
+                            }
+
+                        }
+
+                    }
+                }
+                else {
+                    Toast.makeText(MainActivityClient.this, "task dosent exist", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
     public static void getBusiness(){
         if(Muid!=null) {
@@ -53,6 +120,26 @@ public class MainActivityClient extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
                         thisbusiness = snapshot.getValue(Business.class);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
+        }
+    }
+    public void getBusinessName(){
+        final ProgressDialog pd = ProgressDialog.show(this, "Loading data", "Loading...", true);
+        if(appMani!=null) {
+            DatabaseReference currentuser = refActiveBusiness.child(appMani);
+            currentuser.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        Business b = snapshot.getValue(Business.class);
+                        appM.setText(b.getName());
+                        pd.dismiss();
                     }
                 }
 

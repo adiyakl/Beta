@@ -49,7 +49,14 @@ public class ChangeType {
          }
     return str;
     }
-
+    public static boolean isAfterOrToday(String sdate,LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+        LocalDate parsedDate = LocalDate.parse(sdate, formatter);
+        if(parsedDate.isAfter(date)|| parsedDate.isEqual(date)){
+            return true;
+        }
+        return false;
+    }
     public static String STime (String date){
 
         return date.substring(0,5);

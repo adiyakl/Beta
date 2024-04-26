@@ -17,7 +17,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class DBref {
     public static String uid;
-    public static User user;
+    public static User user = new User("","","","","","","");
     public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public static FirebaseDatabase FBDB = FirebaseDatabase.getInstance();
     public static DatabaseReference refUsers = FBDB.getReference("Users");

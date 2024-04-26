@@ -228,7 +228,7 @@ public void setWindow(){
 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.client_menu,menu);
-        MenuItem item = menu.findItem(R.id.client_main);
+        MenuItem item = menu.findItem(R.id.client_calnder);
         item.setVisible(false);
         this.invalidateOptionsMenu();
         return super.onCreateOptionsMenu(menu);

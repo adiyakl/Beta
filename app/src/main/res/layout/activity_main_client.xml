@@ -13,17 +13,66 @@
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <EditText
+        <TextView
             android:id="@+id/welcomSign"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="30dp"
             android:ems="10"
-            android:inputType="text"
             android:textAlignment="center"
             android:textAllCaps="false"
             android:textSize="34sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/todayDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="34sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="next appointment:"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/appDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="34sp"
+            android:textStyle="bold"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:text="at:"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/appM"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="34sp"
+            android:textStyle="bold"/>
+
     </LinearLayout>
 
     <LinearLayout

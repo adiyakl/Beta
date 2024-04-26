@@ -71,14 +71,16 @@ public class Login extends AppCompatActivity {
                             if (currentUser != null) {
                                 DBref.getUserUid(currentUser);
                                 user = DBref.user;
-                                if (user.getmOrC().equals("M")) {
-                                    Intent intent = new Intent(Login.this, MainActivityManicurist.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else if (user.getmOrC().equals("C")) {
-                                    Intent intent = new Intent(Login.this, MainActivityClient.class);
-                                    startActivity(intent);
-                                    finish();
+                                if (user!=null) {
+                                    if (user.getmOrC().equals("M")) {
+                                        Intent intent = new Intent(Login.this, MainActivityManicurist.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else if (user.getmOrC().equals("C")) {
+                                        Intent intent = new Intent(Login.this, MainActivityClient.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
                                 }
                             }
                         } else {

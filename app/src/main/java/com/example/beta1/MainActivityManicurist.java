@@ -48,7 +48,7 @@ public class MainActivityManicurist extends AppCompatActivity {
     private User user = DBref.user;
     private WorkWindow window;
     private ListView l;
-    private LocalDate date=LocalDate.now();;
+    private LocalDate date=LocalDate.now();
     private String uid =DBref.uid;
     ArrayList<String> appo = new ArrayList<>(Arrays.asList("","","","",""));
     AlertDialog.Builder logoutAlert;
@@ -175,6 +175,8 @@ public class MainActivityManicurist extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     mAuth.signOut();
+                    DBref.uid = "";
+                    DBref.user = null;
                     Intent intent = new Intent(MainActivityManicurist.this,Login.class);
                     startActivity(intent);
                 }

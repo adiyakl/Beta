@@ -37,7 +37,7 @@ import java.io.IOException;
 
 public class AppDetails extends AppCompatActivity {
     private String uid = DBref.uid;
-    private String from, time, wwkey,sdate;
+    private String time, wwkey,sdate;
     private StorageReference refIm;
     private File localFile;
     private Appointment app = new Appointment("","","","","","");
@@ -49,7 +49,6 @@ public class AppDetails extends AppCompatActivity {
         setContentView(R.layout.activity_app_details);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-             from = extras.getString("from");
              time = extras.getString("time");
             Toast.makeText(AppDetails.this,time,Toast.LENGTH_SHORT).show();
             wwkey = extras.getString("windowKey");
