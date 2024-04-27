@@ -86,7 +86,7 @@ public class AppDetails extends AppCompatActivity {
         }
         public void getIm(){
             final ProgressDialog pd = ProgressDialog.show(this, "Upload image", "Uploading...", true);
-            refIm = refPic.child(uid).child(sdate+time+".jpg");
+            refIm = refPic.child(uid).child(sdate).child(sdate+time+".jpg");
             try {
                 localFile = File.createTempFile(sdate+time,"jpg");
             } catch (IOException e) {

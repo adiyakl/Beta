@@ -39,6 +39,7 @@ public class MainActivityClient extends AppCompatActivity {
     TextView welcome , todayDate, appInfo, appM;
     String Sname;
     private User user = DBref.user;
+    private boolean found = false;
     AlertDialog.Builder logoutAlert;
     public static String Muid = "0", sdate,appDate="",appTime="",appMani ="";
     private LocalDate date=LocalDate.now();
@@ -75,28 +76,28 @@ public class MainActivityClient extends AppCompatActivity {
                         for (DataSnapshot dates : Muids.getChildren()) {
                                 for (DataSnapshot wind : dates.getChildren()) {
                                     String adate = dates.getKey().toString();
-                                    Toast.makeText(MainActivityClient.this, adate, Toast.LENGTH_SHORT).show();
                                     if (isAfterOrToday(adate, date)) {
                                     for (DataSnapshot times : wind.getChildren()) {
                                         Appointment app = times.getValue(Appointment.class);
-                                        if (app.getCuid().equals(DBref.uid)) {
+                                        if (app.getCuid().equals(DBref.uid)&&found!=true) {
+                                            found = true;
                                             appDate = app.getDate();
                                             appTime = app.getTime();
                                             appMani =app.getMuid();
                                             getBusinessName();
                                         }
-                                        else {
-                                            appDate = "no appointments in the future";
-                                            appTime = ":(";
+                                        else if (found==false){
+                                            appDate = " ";
+                                            appTime = "no appointments in the future:(";
 
                                         }
                                         appInfo.setText(Odate(appDate)+"  "+appTime);
                                         pd.dismiss();
                                     }
                                 }
-                                    else {
-                                        appDate = "no appointments in the future";
-                                        appTime = ":(";
+                                    else if(found==false){
+                                        appDate = " ";
+                                        appTime = "no appointments in the future :(";
                                         appInfo.setText(appDate+"  "+appTime);
                                         pd.dismiss();
                                     }
@@ -108,6 +109,7 @@ public class MainActivityClient extends AppCompatActivity {
                 }
                 else {
                     Toast.makeText(MainActivityClient.this, "task dosent exist", Toast.LENGTH_SHORT).show();
+                    pd.dismiss();
                 }
             }
         });
@@ -139,6 +141,9 @@ public class MainActivityClient extends AppCompatActivity {
                     if (snapshot.exists()) {
                         Business b = snapshot.getValue(Business.class);
                         appM.setText(b.getName());
+                        pd.dismiss();
+                    }
+                    else {
                         pd.dismiss();
                     }
                 }

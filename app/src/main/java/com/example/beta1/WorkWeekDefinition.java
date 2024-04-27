@@ -7,6 +7,7 @@ import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
+import static com.example.beta1.DBref.refPic;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -29,12 +30,18 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -57,8 +64,9 @@ public class WorkWeekDefinition extends AppCompatActivity {
     private ArrayList<String> NewPartInWindow= new ArrayList<>();
     private WorkWindow window = new WorkWindow("","",new ArrayList<>());
     private String note =" ";
+    private int size = 0;
     int hour, minute;
-    LocalDate date;
+    LocalDate date = LocalDate.now();
     DayOfWeek day;
 
 
@@ -88,6 +96,7 @@ public class WorkWeekDefinition extends AppCompatActivity {
                 }
             }
         });
+
         DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
         currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -118,13 +127,6 @@ public class WorkWeekDefinition extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            uid = currentUser.getUid();
-        }
-        else{
-            Toast.makeText(this,"current user is null",Toast.LENGTH_SHORT).show();
-        }
         DatabaseReference currentACal = refActiveCalendar.child(uid);
         currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -134,9 +136,7 @@ public class WorkWeekDefinition extends AppCompatActivity {
                     Toast.makeText(WorkWeekDefinition.this,Sdate(date),Toast.LENGTH_SHORT).show();
                     defaultWindow();
                 }
-                else {
 
-               }
             }
 
             @Override
@@ -163,18 +163,24 @@ public void defaultWindow(){
             Toast.makeText(WorkWeekDefinition.this,"please enter fileds",Toast.LENGTH_SHORT).show();
             return;
         }
+        if(SendTime.equals("00:00")){
+            SendTime = "23:00";
+            size++;
+        }
             LocalTime startTime = LocalTime.parse(SbegTime);
             LocalTime endTime = LocalTime.parse(SendTime);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
              // Initialize the ArrayList
 
             // Calculate the difference in hours between the two times
-            int size = (int) ChronoUnit.HOURS.between(startTime, endTime);
+
+             size = size+ (int) ChronoUnit.HOURS.between(startTime, endTime);
 
             for(int i = 0; i < size; i++){
                 partInWindow.add(startTime.format(formatter));
                 startTime = startTime.plusHours(1);
             }
+
 
 
 
@@ -187,7 +193,6 @@ public void defaultWindow(){
                         if(partInWindow.isEmpty()){
                             Toast.makeText(WorkWeekDefinition.this,"default window set to be empty",Toast.LENGTH_SHORT).show();
                         }
-
                         showAD();
 
                     }
@@ -200,10 +205,7 @@ public void defaultWindow(){
 
 
     public void checkIfWindowExist(WorkWindow window){
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            uid = currentUser.getUid();
-        }
+
         DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
         currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -218,9 +220,15 @@ public void defaultWindow(){
                 }
                 else {
                     refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
-                    String b = partInWindow.get(0);
-                    String e = partInWindow.get(partInWindow.size()-2);
-                    Toast.makeText(WorkWeekDefinition.this,"your window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
+                    if(!partInWindow.isEmpty()) {
+                        String b = partInWindow.get(0);
+                        String e = partInWindow.get(partInWindow.size() - 1);
+                        Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty " , Toast.LENGTH_SHORT).show();
+
+                    }
                 }
             }
 
@@ -270,10 +278,15 @@ public void defaultWindow(){
 
                         }
                     });
-                    String b = partInWindow.get(0);
-                    String e = partInWindow.get(partInWindow.size()-1);
-                    Toast.makeText(WorkWeekDefinition.this,"your defualt window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
-                }
+                    if(!partInWindow.isEmpty()) {
+                        String b = partInWindow.get(0);
+                        String e = partInWindow.get(partInWindow.size() - 1);
+                        Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty " , Toast.LENGTH_SHORT).show();
+
+                    } }
 
             }
         });
@@ -309,21 +322,32 @@ public void defaultWindow(){
                 refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
                 refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
                 refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
-                String b = partInWindow.get(0);
-                String e = partInWindow.get(partInWindow.size()-1);
-                Toast.makeText(WorkWeekDefinition.this,"your window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
+                if(!partInWindow.isEmpty()) {
+                    String b = partInWindow.get(0);
+                    String e = partInWindow.get(partInWindow.size() - 1);
+                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty " , Toast.LENGTH_SHORT).show();
 
+                }
             }
         });
         mergD.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
                 refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
+                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
+                Toast.makeText(WorkWeekDefinition.this, partInWindow.toString(), Toast.LENGTH_SHORT).show();
+                window = new WorkWindow("forDate", note, partInWindow);
                 refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
-                String b = partInWindow.get(0);
-                String e = partInWindow.get(partInWindow.size()-1);
-                Toast.makeText(WorkWeekDefinition.this,"your window has been set to: "+b+"-"+e,Toast.LENGTH_SHORT).show();
+                if (!partInWindow.isEmpty()) {
+                    String b = partInWindow.get(0);
+                    String e = partInWindow.get(partInWindow.size() - 1);
+                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty ", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         AlertDialog add = mergD.create();

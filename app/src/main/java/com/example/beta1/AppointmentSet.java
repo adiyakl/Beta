@@ -1,6 +1,7 @@
 package com.example.beta1;
 
 import static com.example.beta1.CalendarUtils.selectedDate;
+import static com.example.beta1.ChangeType.Ddate;
 import static com.example.beta1.ChangeType.Odate;
 import static com.example.beta1.ChangeType.Sdate;
 import static com.example.beta1.DBref.refActiveAppointments;
@@ -10,7 +11,10 @@ import static com.example.beta1.MainActivityClient.Muid;
 import static com.example.beta1.MainActivityClient.thisbusiness;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -20,6 +24,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,6 +45,11 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Calendar;
 
 public class AppointmentSet extends AppCompatActivity {
     TextView dateAndDay, bName;
@@ -48,10 +59,19 @@ public class AppointmentSet extends AppCompatActivity {
     private String Bname = thisbusiness.getName();
     private ImageView iv;
     private String CorG;
+    CheckBox cb;
     private String imageUri, notes, wwKey, date;
     private String currentPath;
     private StorageReference refSto;
     private static Uri file;
+    private LocalDate localDate;
+    private LocalTime Ttime;
+    private LocalDateTime localDateTime;
+    private AlarmManager alarmMgr;
+    private PendingIntent alarmIntent;
+    private int ALARM_RQST_CODE=0;
+    private Calendar calSet;
+
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;//id the permission
     private static final int REQUEST_IMAGE_CAPTURE = 2;
@@ -65,6 +85,7 @@ public class AppointmentSet extends AppCompatActivity {
         dateAndDay = findViewById(R.id.Atime);
         bName = (findViewById(R.id.ClientName));
         req = findViewById(R.id.notes);
+        cb = findViewById(R.id.aCb);
         iv = findViewById(R.id.image);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -82,15 +103,38 @@ public class AppointmentSet extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_READ_EXTERNAL_STORAGE_PERMISSION);
         }
+
+        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+            localDate = Ddate(sdate);
+            Ttime =ChangeType.Ttime(time);
+            localDateTime = LocalDate.now().atTime(LocalTime.now().plusMinutes(1));
+                 localDateTime = localDate.atTime(Ttime.plusMinutes(7));// 30 minus...
+
+            }
+        });
     }
-
-
     public void setApp(View view) {
-        if (CorG.equals("G")) {
-            uplodegal();
+        if(cb.isChecked()){
+            ALARM_RQST_CODE++;
+            Intent intent = new Intent(this, AlarmReceiver.class);
+            intent.putExtra("msg", String.valueOf(ALARM_RQST_CODE) + " TOD");
+            alarmIntent = PendingIntent.getBroadcast(this,
+                    ALARM_RQST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
+            alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+            long alarmTimeMillis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+//             Set the alarm
+            alarmMgr.set(AlarmManager.RTC_WAKEUP, alarmTimeMillis, alarmIntent);
+        Toast.makeText(AppointmentSet.this,String.valueOf(ALARM_RQST_CODE) + " Alarm in " + String.valueOf(localDateTime.getHour())+"at "+ String.valueOf(localDateTime.getMinute()),Toast.LENGTH_LONG).show();
         }
-        if (CorG.equals("C")) {
-            uplodecam();
+        if (CorG!=null) {
+            if (CorG.equals("G")) {
+                uplodegal();
+            }
+            if (CorG.equals("C")) {
+                uplodecam();
+            }
         }
         notes = String.valueOf(req.getText());
         Appointment appointment = new Appointment(time, sdate, DBref.user.getName(), DBref.uid, Muid, notes);
@@ -98,6 +142,8 @@ public class AppointmentSet extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivityClient.class);
         startActivity(intent);
     }
+
+
 
     // Handle permission request results
     @Override
@@ -147,7 +193,7 @@ public class AppointmentSet extends AppCompatActivity {
     private void uplodecam(){
         final ProgressDialog pd = ProgressDialog.show(this, "Upload image", "Uploading...", true);
         date = Sdate(selectedDate);
-        refSto = refPic.child(Muid).child(date+time + ".jpg");
+        refSto = refPic.child(Muid).child(date).child(date+time + ".jpg");
         Bitmap imageBitmap = BitmapFactory.decodeFile(currentPath);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         if(imageBitmap!=null)
@@ -172,7 +218,7 @@ public class AppointmentSet extends AppCompatActivity {
     }
     private void uplodegal() {
         final ProgressDialog pd = ProgressDialog.show(this, "Upload image", "Uploading...", true);
-        refSto = refPic.child(Muid).child(sdate + time + ".jpg");
+        refSto = refPic.child(Muid).child(sdate).child(sdate + time + ".jpg");
         refSto.putFile(file)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override

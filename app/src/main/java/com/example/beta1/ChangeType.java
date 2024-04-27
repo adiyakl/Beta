@@ -1,6 +1,7 @@
 package com.example.beta1;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,12 +20,13 @@ public class ChangeType {
     }
     public static String Odate(String date){
         StringBuilder str = new StringBuilder();
-        str.append(date.substring(4, 6));
-        str.append(".");
-        str.append(date.substring(2, 4));
-        str.append(".");
-        str.append(date.substring(0, 2));
-
+        if(date.length()>=6) {
+            str.append(date.substring(4, 6));
+            str.append(".");
+            str.append(date.substring(2, 4));
+            str.append(".");
+            str.append(date.substring(0, 2));
+        }
         return str.toString();
     }
 
@@ -57,6 +59,17 @@ public class ChangeType {
         }
         return false;
     }
+    public static LocalDate Ddate(String sdate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+        LocalDate parsedDate = LocalDate.parse(sdate, formatter);
+        return parsedDate;
+    }
+    public static LocalTime Ttime(String stime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime parsedTime = LocalTime.parse(stime, formatter);
+        return parsedTime;
+    }
+
     public static String STime (String date){
 
         return date.substring(0,5);

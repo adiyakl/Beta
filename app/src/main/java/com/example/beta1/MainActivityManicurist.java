@@ -62,20 +62,26 @@ public class MainActivityManicurist extends AppCompatActivity {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MainActivityManicurist.this, android.R.layout.simple_list_item_1, appo);
         l.setAdapter(arrayAdapter);
         appo.clear();
-        getList();
-        getWind();
+        if(uid!=null) {
+            getList();
+            getWind();
+        }
 
     }
     public void getWind(){
-        final ProgressDialog pd = ProgressDialog.show(this, "Loading list", "Loading...", true);
+        final ProgressDialog pd = ProgressDialog.show(this, "Loading window", "Loading...", true);
         DatabaseReference currentDateRef = refActiveCalendar.child(uid).child(Sdate(date));
         currentDateRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if (task.isSuccessful() && task.getResult().exists()) {
                      window = task.getResult().getValue(WorkWindow.class);
-                    String txt= "your working window for today: "+window.partInWindow.get(0)+"- "+window.partInWindow.get(window.partInWindow.size()-2);
-                    wind.setText(txt);
+                     if(!window.partInWindow.isEmpty()) {
+                         String txt = "your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size() - 2);
+                         wind.setText(txt);
+                     }
+
+                    pd.dismiss();
                 }
                 else {
                     refActiveCalendar.child(uid).child("DefaultWindow").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -89,7 +95,9 @@ public class MainActivityManicurist extends AppCompatActivity {
                         }
                     });
                     pd.dismiss();
-                }}
+                }
+            }
+
         });
     }
     public void getList(){
@@ -109,6 +117,7 @@ public class MainActivityManicurist extends AppCompatActivity {
 
                 }
                 if(!task.getResult().exists()) {
+                    pd.dismiss();
                     Toast.makeText(MainActivityManicurist.this,"no appointments here",Toast.LENGTH_SHORT).show();
                 }
                 if(appo.isEmpty()){
