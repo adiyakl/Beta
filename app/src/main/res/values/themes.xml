@@ -10,7 +10,7 @@
     <style name="Theme.Kyoto" parent="Theme.AppCompat.Light.DarkActionBar">
         ...
         <item name="colorPrimary">@color/pink</item>
-        <item name="colorPrimaryDark">@color/pink</item>
+        <item name="colorPrimaryDark">@color/darkpurple</item>
         <item name="colorAccent">@color/darkpurple</item>
         <item name="colorControlNormal">@color/jet</item>
         <item name="android:colorBackground">@color/ashwhite</item>

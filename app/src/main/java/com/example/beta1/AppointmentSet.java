@@ -166,15 +166,9 @@ public class AppointmentSet extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data_back) {
         super.onActivityResult(requestCode, resultCode, data_back);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-            Bundle extras = data_back.getExtras();
-            if (extras != null) {
-                CorG = "C";
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                iv.setImageBitmap(imageBitmap);
-            }
-            else {
-                Toast.makeText(this, "No Image was selected", Toast.LENGTH_LONG).show();
-            }
+            Bitmap imageBitmap = BitmapFactory.decodeFile(currentPath);
+            CorG = "C";
+            iv.setImageBitmap(imageBitmap);
         }
 
         if (requestCode == REQUEST_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
@@ -245,10 +239,10 @@ public class AppointmentSet extends AppCompatActivity {
         try {
             File imgFile = File.createTempFile(filename,".jpg",storageDir);
             currentPath = imgFile.getAbsolutePath();
-//            Uri imageUri = FileProvider.getUriForFile(AppointmentSet.this,"com.example.beta1.fileprovider",imgFile);
+            Uri imageUri = FileProvider.getUriForFile(AppointmentSet.this,"com.example.beta1.fileprovider",imgFile);
             Intent takePicIntent = new Intent();
             takePicIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-//            takePicIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,imageUri);
+            takePicIntent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT,imageUri);
             if (takePicIntent.resolveActivity(getPackageManager()) != null) {
                 startActivityForResult(takePicIntent, REQUEST_IMAGE_CAPTURE );
             }
@@ -257,6 +251,11 @@ public class AppointmentSet extends AppCompatActivity {
             throw new RuntimeException(e);
         }
     }
+
+
+
+
+
 
 //  open gallery
     public void gallery(View view) {

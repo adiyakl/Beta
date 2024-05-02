@@ -201,7 +201,7 @@ public class MainActivityClient extends AppCompatActivity {
             logoutAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    mAuth.signOut();
+                    mAuth.signOut(); 
                     Intent intent = new Intent(MainActivityClient.this,Login.class);
                     startActivity(intent);
                 }
