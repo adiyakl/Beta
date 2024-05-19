@@ -20,7 +20,7 @@
         <item name="android:textColorPrimary">@color/black</item>
         <item name="android:textColorSecondary">@color/jet</item>
         <item name="android:textColorHint">@color/jet</item>
-        <item name="android:textColorPrimaryInverse">@color/white</item>
+        <item name="android:textColorPrimaryInverse">@color/pink</item>
         <item name="android:textColorSecondaryInverse">@color/lightblue</item>
         <item name="android:textColorHintInverse">@color/lightblue</item>
         <item name="android:fontFamily">Monospace</item>

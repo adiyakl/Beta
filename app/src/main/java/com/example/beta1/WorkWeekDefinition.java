@@ -10,6 +10,7 @@ import static com.example.beta1.DBref.refActiveCalendar;
 import static com.example.beta1.DBref.refPic;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -97,48 +98,71 @@ public class WorkWeekDefinition extends AppCompatActivity {
             }
         });
 
-        DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
-        currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()){
-                    WorkWindow DBWindow = snapshot.getValue(WorkWindow.class);
-                    if (DBWindow != null) {
-                        NewPartInWindow = DBWindow.getPartInWindow();
-                        if(NewPartInWindow.isEmpty()){
-                            begTime.setText("00:00");
-                            endTime.setText("00:00");
-                        }
-                        else {
-                            begTime.setText(NewPartInWindow.get(0));
-                            endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
 
-            }
-        });
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        final ProgressDialog pd = ProgressDialog.show(this, "loading data", "loading...", true);
         DatabaseReference currentACal = refActiveCalendar.child(uid);
         currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if dident set workwimdow yet
-                if(!snapshot.exists()){
-                    Toast.makeText(WorkWeekDefinition.this,Sdate(date),Toast.LENGTH_SHORT).show();
-                    defaultWindow();
+                if(snapshot.exists()){
+                    for(DataSnapshot ds : snapshot.getChildren()){
+                        if(snapshot.child(Sdate(date)).exists()) {
+                            // spec day window
+                            WorkWindow DBWindow =snapshot.child(Sdate(date)).getValue(WorkWindow.class);
+                                if (DBWindow != null) {
+                                    NewPartInWindow = DBWindow.getPartInWindow();
+                                    if (NewPartInWindow.isEmpty()) {
+                                        begTime.setText("00:00");
+                                        endTime.setText("00:00");
+                                        pd.dismiss();
+
+                                    } else {
+                                        begTime.setText(NewPartInWindow.get(0));
+                                        endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
+                                        pd.dismiss();
+
+                                    }
+
+
+                            }
+
+                        }
+                        else{
+                            //def window
+                            WorkWindow DBWindow = snapshot.child("DefaultWindow").getValue(WorkWindow.class);
+                            if (DBWindow != null) {
+                                NewPartInWindow = DBWindow.getPartInWindow();
+                                if (NewPartInWindow.isEmpty()) {
+                                    begTime.setText("00:00");
+                                    endTime.setText("00:00");
+                                } else {
+                                    begTime.setText(NewPartInWindow.get(0));
+                                    endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
+                                }
+                            }
+                            pd.dismiss();
+
+                        }
+                    }
+
+
+
                 }
-
+                //                if dident set workwimdow yet
+                else {
+                    if(!snapshot.exists()){
+                        pd.dismiss();
+                        Toast.makeText(WorkWeekDefinition.this,Sdate(date),Toast.LENGTH_SHORT).show();
+                        defaultWindow();
+                    }
+                }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -205,7 +229,7 @@ public void defaultWindow(){
 
 
     public void checkIfWindowExist(WorkWindow window){
-
+        final ProgressDialog pd = ProgressDialog.show(this, "loading data", "loading...", true);
         DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
         currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -216,6 +240,7 @@ public void defaultWindow(){
                     if (DBWindow != null) {
                          NewPartInWindow = DBWindow.getPartInWindow();
                     }
+                    pd.dismiss();
                     showAD();
                 }
                 else {
@@ -223,9 +248,11 @@ public void defaultWindow(){
                     if(!partInWindow.isEmpty()) {
                         String b = partInWindow.get(0);
                         String e = partInWindow.get(partInWindow.size() - 1);
+                        pd.dismiss();
                         Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
                     }
                     else {
+                        pd.dismiss();
                         Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty " , Toast.LENGTH_SHORT).show();
 
                     }

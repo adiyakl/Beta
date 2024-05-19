@@ -77,7 +77,7 @@ public class MainActivityManicurist extends AppCompatActivity {
                 if (task.isSuccessful() && task.getResult().exists()) {
                      window = task.getResult().getValue(WorkWindow.class);
                      if(!window.partInWindow.isEmpty()) {
-                         String txt = "your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size() - 2);
+                         String txt = "your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size()-1);
                          wind.setText(txt);
                      }
 
@@ -89,7 +89,7 @@ public class MainActivityManicurist extends AppCompatActivity {
                         public void onComplete(@NonNull Task<DataSnapshot> task) {
                             if (task.isSuccessful()) {
                                  window = task.getResult().getValue(WorkWindow.class);
-                                String txt= "your working window for today: "+window.partInWindow.get(0)+"- "+window.partInWindow.get(window.partInWindow.size()-2);
+                                String txt= "your working window for today: "+window.partInWindow.get(0)+"- "+window.partInWindow.get(window.partInWindow.size()-1);
                                 wind.setText(txt);
                             }
                         }
@@ -118,7 +118,6 @@ public class MainActivityManicurist extends AppCompatActivity {
                 }
                 if(!task.getResult().exists()) {
                     pd.dismiss();
-                    Toast.makeText(MainActivityManicurist.this,"no appointments here",Toast.LENGTH_SHORT).show();
                 }
                 if(appo.isEmpty()){
                     appo.add("no appointments for today");

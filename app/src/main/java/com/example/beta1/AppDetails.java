@@ -5,6 +5,7 @@ import static com.example.beta1.ChangeType.Odate;
 import static com.example.beta1.ChangeType.Sdate;
 import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refPic;
+import static com.example.beta1.DBref.refUsers;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -37,11 +38,12 @@ import java.io.IOException;
 
 public class AppDetails extends AppCompatActivity {
     private String uid = DBref.uid;
+    private String Cuid = "0";
     private String time, wwkey,sdate;
     private StorageReference refIm;
     private File localFile;
     private Appointment app = new Appointment("","","","","","");
-    TextView dateAndHour, Cname, req;
+    TextView dateAndHour, Cname, req,phoneNum;
     ImageView im;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +59,37 @@ public class AppDetails extends AppCompatActivity {
         dateAndHour = findViewById(R.id.Atime);
         Cname = findViewById(R.id.ClientName);
         req = findViewById(R.id.notes);
+        phoneNum = findViewById(R.id.phonenum);
         sdate =Sdate(selectedDate);
         dateAndHour.setText(Odate(sdate) + " at " + time);
         getApp();
         getIm();
+        getPhone();
+    }
+    public void getPhone(){
+        final ProgressDialog pd = ProgressDialog.show(this, "Uploading data", "Uploadinging...", true);
+        DatabaseReference currentDateRef = refUsers.child(Cuid);
+        currentDateRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()&& task.getResult().exists()) {
+                    User user = task.getResult().getValue(User.class);
+                    if(user!=null) {
+                        if(!user.getPhone().isEmpty()){
+                            phoneNum.setText(user.getPhone());
+                        }
+                    }
+                    pd.dismiss();
+                }
+                else {
+                    pd.dismiss();
+                    Toast.makeText(AppDetails.this,"phone number i'snt found",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
     public void getApp(){
-        final ProgressDialog pd = ProgressDialog.show(this, "Upload image", "Uploading...", true);
+        final ProgressDialog pd = ProgressDialog.show(this, "Uploading data", "Uploadinging...", true);
         DatabaseReference currentDateRef = refActiveAppointments.child(uid).child(sdate).child(wwkey).child(time);
         currentDateRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
@@ -71,6 +97,7 @@ public class AppDetails extends AppCompatActivity {
                 if (task.isSuccessful()&& task.getResult().exists()) {
                     app = task.getResult().getValue(Appointment.class);
                     if(app!=null) {
+                        Cuid = app.getCuid();
                         Cname.setText(app.getName());
                         req.setText(app.getRequests());
                     }

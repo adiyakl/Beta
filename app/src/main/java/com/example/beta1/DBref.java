@@ -28,6 +28,8 @@ public class DBref {
     public static FirebaseStorage FBST = FirebaseStorage.getInstance();
     public static StorageReference refPic = FBST.getReference();
     public static void getUserUid(FirebaseUser fbUser){
+        uid = "";
+        user = new User("","","","","","","");
     uid = fbUser.getUid();
     refUsers = FBDB.getReference("Users").child(uid);
         getUser();
