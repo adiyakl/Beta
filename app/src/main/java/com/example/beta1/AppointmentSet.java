@@ -110,7 +110,7 @@ public class AppointmentSet extends AppCompatActivity {
             localDate = Ddate(sdate);
             Ttime =ChangeType.Ttime(time);
             localDateTime = LocalDate.now().atTime(LocalTime.now().plusMinutes(1));
-                 localDateTime = localDate.atTime(Ttime.plusMinutes(7));// 30 minus...
+                 localDateTime = localDate.atTime(Ttime.minusMinutes(7));// 30 minus...
 
             }
         });
@@ -137,7 +137,7 @@ public class AppointmentSet extends AppCompatActivity {
             }
         }
         notes = String.valueOf(req.getText());
-        Appointment appointment = new Appointment(time, sdate, DBref.user.getName(), DBref.uid, Muid, notes);
+        Appointment appointment = new Appointment(time, sdate, DBref.user.getName(), DBref.uid, Muid, notes,DBref.user.getPhone());
         refActiveAppointments.child(Muid).child(sdate).child(wwKey).child(time).setValue(appointment);
         Intent intent = new Intent(this, MainActivityClient.class);
         startActivity(intent);

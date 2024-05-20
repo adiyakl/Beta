@@ -406,30 +406,7 @@ public void defaultWindow(){
                     uid = currentUser.getUid();
                 }
                 setHours();
-//                DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
-//                currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                        if(snapshot.exists()){
-//                            WorkWindow DBWindow = snapshot.getValue(WorkWindow.class);
-//                            if (DBWindow != null) {
-//                                NewPartInWindow = DBWindow.getPartInWindow();
-//                                if(NewPartInWindow.isEmpty()){
-//                                    begTime.setText("00:00");
-//                                    endTime.setText("00:00");
-//                                }
-//                                else {
-//                                    begTime.setText(NewPartInWindow.get(0));
-//                                    endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
-//                                }
-//                            }
-//                        }
-//                    }
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//
-//                    }
-//                });
+
             }
         }, year, month, dayOfMonth);
 

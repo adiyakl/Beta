@@ -50,10 +50,9 @@ public class ChoosingABusiness extends AppCompatActivity {
     AlertDialog.Builder logoutAlert;
     private ArrayList<String> businessesList = new ArrayList<>();
     private ArrayList<Business> businesses = new ArrayList<>();
-    TextView busName,busServ,busAdres,busPhone,busMani;
+    TextView busName,busServ,busAdres,busPhone;
     private Business b;
     private User user = DBref.user;
-    private User Muser;
     private  String linkUid;
     Button bt;
 
@@ -66,7 +65,6 @@ public class ChoosingABusiness extends AppCompatActivity {
         busServ = findViewById(R.id.busServ);
         busPhone = findViewById(R.id.busPhone);
         busAdres = findViewById(R.id.busAddre);
-        busMani = findViewById(R.id.busMani);
         bt = findViewById(R.id.select);
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,17 +103,7 @@ public class ChoosingABusiness extends AppCompatActivity {
                 busPhone.setText(b.getPhone());
                 busAdres.setText(b.getAdress());
                 busServ.setText(b.getServices());
-                DatabaseReference Muserref = refUsers.child(b.getUid());
-                Muserref.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-                        if(task.isSuccessful()){
-                            Muser = task.getResult().getValue(User.class);
-                            if(Muser!=null)
-                                busMani.setText(Muser.getName());
-                        }
-                    }
-                });
+
                 DBref.getUserUid(mAuth.getCurrentUser());
             }
 

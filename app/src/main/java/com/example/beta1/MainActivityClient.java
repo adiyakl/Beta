@@ -36,7 +36,7 @@ import java.time.LocalDate;
 
 public class MainActivityClient extends AppCompatActivity {
 
-    TextView welcome , todayDate, appInfo, appM;
+    TextView welcome , todayDate, appInfo, appM,at;
     String Sname;
     private User user = DBref.user;
     private boolean found = false;
@@ -53,6 +53,8 @@ public class MainActivityClient extends AppCompatActivity {
         welcome = findViewById(R.id.welcomSign);
         appInfo = findViewById(R.id.appDate);
         todayDate = findViewById(R.id.todayDate);
+        at = findViewById(R.id.at);
+        at.setVisibility(View.VISIBLE);
         appM =findViewById(R.id.appM);
         if (user!=null) {
             Muid = user.getLinked();
@@ -81,6 +83,7 @@ public class MainActivityClient extends AppCompatActivity {
                                         Appointment app = times.getValue(Appointment.class);
                                         if (app.getCuid().equals(DBref.uid)&&found!=true) {
                                             found = true;
+                                            at.setVisibility(View.VISIBLE);
                                             appDate = app.getDate();
                                             appTime = app.getTime();
                                             appMani =app.getMuid();
@@ -89,7 +92,7 @@ public class MainActivityClient extends AppCompatActivity {
                                         else if (found==false){
                                             appDate = " ";
                                             appTime = "no appointments in the future:(";
-
+                                            at.setVisibility(View.GONE);
                                         }
                                         appInfo.setText(Odate(appDate)+"  "+appTime);
                                         pd.dismiss();
@@ -99,6 +102,7 @@ public class MainActivityClient extends AppCompatActivity {
                                         appDate = " ";
                                         appTime = "no appointments in the future :(";
                                         appInfo.setText(appDate+"  "+appTime);
+                                        at.setVisibility(View.GONE);
                                         pd.dismiss();
                                     }
                             }

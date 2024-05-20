@@ -11,6 +11,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -87,23 +88,23 @@ public class Register extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            final ProgressDialog pd = ProgressDialog.show(Register.this, "Registering", "Connecting...", true);
                             FirebaseUser user = mAuth.getCurrentUser();
                             DBref.getUserUid(user);
                             userdb=new User(name,email,phone,DBref.uid,mOrC,password,"");
                             refUsers.setValue(userdb);
                             DBref.setUser(userdb);
-                            if(DBref.user == null){
-                                Toast.makeText(Register.this, userdb.toString(), Toast.LENGTH_SHORT).show();
-                            }
                             if(userdb.getmOrC().equals("M")){
+                                pd.dismiss();
                                 Intent intent = new Intent(Register.this,BusinessEditing.class);
                                 startActivity(intent);
                             }
                             else {//to c
+                                pd.dismiss();
                                 Intent intent = new Intent(Register.this,ChoosingABusiness.class);
                                 startActivity(intent);
                             }
-
+                            pd.dismiss();
                             finish();
                         } else {
                             Toast.makeText(Register.this, "please check your fields", Toast.LENGTH_SHORT).show();

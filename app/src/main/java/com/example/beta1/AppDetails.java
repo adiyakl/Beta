@@ -42,7 +42,7 @@ public class AppDetails extends AppCompatActivity {
     private String time, wwkey,sdate;
     private StorageReference refIm;
     private File localFile;
-    private Appointment app = new Appointment("","","","","","");
+    private Appointment app = new Appointment("","","","","","","");
     TextView dateAndHour, Cname, req,phoneNum;
     ImageView im;
     @Override
@@ -52,7 +52,6 @@ public class AppDetails extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
              time = extras.getString("time");
-            Toast.makeText(AppDetails.this,time,Toast.LENGTH_SHORT).show();
             wwkey = extras.getString("windowKey");
         }
         im = findViewById(R.id.image);
@@ -64,30 +63,9 @@ public class AppDetails extends AppCompatActivity {
         dateAndHour.setText(Odate(sdate) + " at " + time);
         getApp();
         getIm();
-        getPhone();
+
     }
-    public void getPhone(){
-        final ProgressDialog pd = ProgressDialog.show(this, "Uploading data", "Uploadinging...", true);
-        DatabaseReference currentDateRef = refUsers.child(Cuid);
-        currentDateRef.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (task.isSuccessful()&& task.getResult().exists()) {
-                    User user = task.getResult().getValue(User.class);
-                    if(user!=null) {
-                        if(!user.getPhone().isEmpty()){
-                            phoneNum.setText(user.getPhone());
-                        }
-                    }
-                    pd.dismiss();
-                }
-                else {
-                    pd.dismiss();
-                    Toast.makeText(AppDetails.this,"phone number i'snt found",Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
+
     public void getApp(){
         final ProgressDialog pd = ProgressDialog.show(this, "Uploading data", "Uploadinging...", true);
         DatabaseReference currentDateRef = refActiveAppointments.child(uid).child(sdate).child(wwkey).child(time);
@@ -99,13 +77,14 @@ public class AppDetails extends AppCompatActivity {
                     if(app!=null) {
                         Cuid = app.getCuid();
                         Cname.setText(app.getName());
+                        phoneNum.setText(app.getCphone());
                         req.setText(app.getRequests());
                     }
                     pd.dismiss();
                 }
                 else {
                     pd.dismiss();
-                    Toast.makeText(AppDetails.this,"app not found",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AppDetails.this,"appointment not found",Toast.LENGTH_SHORT).show();
                 }
             }
          });
@@ -123,7 +102,6 @@ public class AppDetails extends AppCompatActivity {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     pd.dismiss();
-                    Toast.makeText(AppDetails.this, "Image download success", Toast.LENGTH_LONG).show();
                     String filePath = localFile.getPath();
                     Bitmap bitmap = BitmapFactory.decodeFile(filePath);
                     im.setImageBitmap(bitmap);
