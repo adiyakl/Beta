@@ -191,9 +191,11 @@ public class MainActivityClient extends AppCompatActivity {
         if (id == R.id.client_calnder) {
             Intent intent = new Intent(this,CalendarClient.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.choice) {
             Intent intent = new Intent(this,ChoosingABusiness.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.Clogout){
             logoutAlert = new AlertDialog.Builder(this);
@@ -204,6 +206,7 @@ public class MainActivityClient extends AppCompatActivity {
                     mAuth.signOut(); 
                     Intent intent = new Intent(MainActivityClient.this,Login.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             logoutAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {

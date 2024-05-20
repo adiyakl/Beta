@@ -210,13 +210,16 @@ public class BusinessEditing extends AppCompatActivity {
         if (id == R.id.mani_calnder) {
             Intent intent = new Intent(this,WeekViewActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.mani_main) {
             Intent intent= new Intent(BusinessEditing.this,MainActivityManicurist.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.week_def){
             Intent intent= new Intent(this,WorkWeekDefinition.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.Mlogout){
             logoutAlert = new AlertDialog.Builder(this);
@@ -227,6 +230,7 @@ public class BusinessEditing extends AppCompatActivity {
                     mAuth.signOut();
                     Intent intent = new Intent(BusinessEditing.this,Login.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             logoutAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {

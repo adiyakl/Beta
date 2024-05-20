@@ -128,9 +128,9 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
                     }
 
                 }
-                if(!task.getResult().exists()) {
-                   Toast.makeText(CalendarClient.this,"no appointments here",Toast.LENGTH_SHORT).show();
-                }
+//                if(!task.getResult().exists()) {
+//                   Toast.makeText(CalendarClient.this,"no appointments here",Toast.LENGTH_SHORT).show();
+//                }
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(CalendarClient.this, android.R.layout.simple_list_item_1, hours);
                 l.setAdapter(arrayAdapter);
             }
@@ -239,9 +239,11 @@ public void setWindow(){
         if (id == R.id.client_main) {
             Intent intent= new Intent(CalendarClient.this,MainActivityClient.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.choice) {
             Intent intent= new Intent(CalendarClient.this, ChoosingABusiness.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.Clogout){
             logoutAlert = new AlertDialog.Builder(this);
@@ -249,9 +251,11 @@ public void setWindow(){
             logoutAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
+
                     mAuth.signOut();
                     Intent intent = new Intent(CalendarClient.this,Login.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             logoutAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {

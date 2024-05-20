@@ -198,7 +198,7 @@ public class AppointmentSet extends AppCompatActivity {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         pd.dismiss();
-                        Toast.makeText(AppointmentSet.this, "Image Uploaded", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(AppointmentSet.this, "Image Uploaded", Toast.LENGTH_LONG).show();
 
                     }
                 })
@@ -218,14 +218,14 @@ public class AppointmentSet extends AppCompatActivity {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         pd.dismiss();
-                        Toast.makeText(AppointmentSet.this, "Image Uploaded", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(AppointmentSet.this, "Image Uploaded", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         pd.dismiss();
-                        Toast.makeText(AppointmentSet.this, "Upload failed", Toast.LENGTH_LONG).show();
+                        Toast.makeText(AppointmentSet.this, "Upload failed", Toast.LENGTH_SHORT).show();
                     }
                 });
 

@@ -30,11 +30,10 @@ public class Register extends AppCompatActivity {
     TextView manicurist;
     TextView client;
     String mOrC;
-    User userdb;
+    private User userdb;
     EditText eTname, eTphone, eTemail, eTpass;
     Button bt1;
-    boolean stayCon;
-    String email, password, uid, name, phone;
+    String email, password, name, phone;
      @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,11 +51,7 @@ public class Register extends AppCompatActivity {
          mOrC = "C";
          client.setBackgroundColor(Color.parseColor("#FFEFEF"));
 
-//         SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
-//         SharedPreferences.Editor editor=settings.edit();
-//         editor.putBoolean("stayConnect",stayco.isChecked());
-//         editor.commit();
-//         stayCon = true;
+
 
      }
     public void reg(View view) {
@@ -71,13 +66,22 @@ public class Register extends AppCompatActivity {
             return;
         }
         if(!email.contains("@")||!email.contains(".com")){
-            Toast.makeText(Register.this,"email adrss must contain @ and .com<3", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Register.this,"email address must contain @ and .com<3", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(password.length()<6){
+            Toast.makeText(Register.this,"password must be at list 6 characters", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if(phone.length()<8){
-            Toast.makeText(Register.this, "phone number must be at list 8 chares",Toast.LENGTH_SHORT).show();
+        if(phone.length()<10){
+            Toast.makeText(Register.this, "phone number must be at list 10 characters",Toast.LENGTH_SHORT).show();
         }
+        SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
+        SharedPreferences.Editor editor=settings.edit();
+        editor.putBoolean("stayConnect",stayco.isChecked());
+        editor.commit();
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -87,6 +91,10 @@ public class Register extends AppCompatActivity {
                             DBref.getUserUid(user);
                             userdb=new User(name,email,phone,DBref.uid,mOrC,password,"");
                             refUsers.setValue(userdb);
+                            DBref.setUser(userdb);
+                            if(DBref.user == null){
+                                Toast.makeText(Register.this, userdb.toString(), Toast.LENGTH_SHORT).show();
+                            }
                             if(userdb.getmOrC().equals("M")){
                                 Intent intent = new Intent(Register.this,BusinessEditing.class);
                                 startActivity(intent);

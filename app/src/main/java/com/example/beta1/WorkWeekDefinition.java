@@ -97,14 +97,13 @@ public class WorkWeekDefinition extends AppCompatActivity {
                 }
             }
         });
-
+        setHours();
 
 
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+
+    public void setHours(){
         final ProgressDialog pd = ProgressDialog.show(this, "loading data", "loading...", true);
         DatabaseReference currentACal = refActiveCalendar.child(uid);
         currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -115,19 +114,19 @@ public class WorkWeekDefinition extends AppCompatActivity {
                         if(snapshot.child(Sdate(date)).exists()) {
                             // spec day window
                             WorkWindow DBWindow =snapshot.child(Sdate(date)).getValue(WorkWindow.class);
-                                if (DBWindow != null) {
-                                    NewPartInWindow = DBWindow.getPartInWindow();
-                                    if (NewPartInWindow.isEmpty()) {
-                                        begTime.setText("00:00");
-                                        endTime.setText("00:00");
-                                        pd.dismiss();
+                            if (DBWindow != null) {
+                                NewPartInWindow = DBWindow.getPartInWindow();
+                                if (NewPartInWindow.isEmpty()) {
+                                    begTime.setText("00:00");
+                                    endTime.setText("00:00");
+                                    pd.dismiss();
 
-                                    } else {
-                                        begTime.setText(NewPartInWindow.get(0));
-                                        endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
-                                        pd.dismiss();
+                                } else {
+                                    begTime.setText(NewPartInWindow.get(0));
+                                    endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
+                                    pd.dismiss();
 
-                                    }
+                                }
 
 
                             }
@@ -179,6 +178,8 @@ public void defaultWindow(){
 
 
     public void onSetWindow(View view) {
+        partInWindow.clear();
+        NewPartInWindow.clear();
         //customwindow
         note = String.valueOf(noteToClient.getText());
         SbegTime =(String) begTime.getText();
@@ -187,6 +188,7 @@ public void defaultWindow(){
             Toast.makeText(WorkWeekDefinition.this,"please enter fileds",Toast.LENGTH_SHORT).show();
             return;
         }
+        size = 0;
         if(SendTime.equals("00:00")){
             SendTime = "23:00";
             size++;
@@ -210,7 +212,8 @@ public void defaultWindow(){
 
                     if(cb.isChecked()) {
                         window = new WorkWindow("forDate",note, partInWindow);
-                        checkIfWindowExist(window);
+                        showAD();
+//                        checkIfWindowExist(window);
 
                     }
                     else {
@@ -227,59 +230,31 @@ public void defaultWindow(){
 
 
 
-
-    public void checkIfWindowExist(WorkWindow window){
-        final ProgressDialog pd = ProgressDialog.show(this, "loading data", "loading...", true);
-        DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
-        currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//              if date already have a window
-                if(snapshot.exists()){
-                    WorkWindow DBWindow = snapshot.getValue(WorkWindow.class);
-                    if (DBWindow != null) {
-                         NewPartInWindow = DBWindow.getPartInWindow();
-                    }
-                    pd.dismiss();
-                    showAD();
-                }
-                else {
-                    refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
-                    if(!partInWindow.isEmpty()) {
-                        String b = partInWindow.get(0);
-                        String e = partInWindow.get(partInWindow.size() - 1);
-                        pd.dismiss();
-                        Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        pd.dismiss();
-                        Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty " , Toast.LENGTH_SHORT).show();
-
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-    }
     public void showAD(){
 //      change window
         delWAlert = new AlertDialog.Builder(this);
         if(cb.isChecked()) {
-            delWAlert.setMessage("setting a new window cancel all of the appoinments on this date, are u suer?");
+            delWAlert.setMessage("setting a new window cancel all of the appointments on this date, are u suer?");
         }
         if(!cb.isChecked()){
-            delWAlert.setMessage("setting a new default window will keep all of the appoinments that has already been set, but u might wont be able to see all of them in calendar. are u suer?");
+            delWAlert.setMessage("setting a new default window will cancel all of the appointments that have been established under the default window. are u sure? ");
         }
         delWAlert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 if (cb.isChecked()){
-                    merD();
+                    refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
+                    refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
+                    Toast.makeText(WorkWeekDefinition.this, partInWindow.toString(), Toast.LENGTH_SHORT).show();
+                    window = new WorkWindow("forDate", note, partInWindow);
+                    refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
+                    if (!partInWindow.isEmpty()) {
+                        String b = partInWindow.get(0);
+                        String e = partInWindow.get(partInWindow.size() - 1);
+                        Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty ", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else{
                     window = new WorkWindow("DefaultWindow", note, partInWindow);
@@ -327,59 +302,59 @@ public void defaultWindow(){
         add.show();
     }
 
-    public void merD(){
-//      change window
-        mergD = new AlertDialog.Builder(this);
-        mergD.setMessage("want to merge window?");
-        mergD.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                ArrayList<String> lst = new ArrayList<>();
-                for(int j =0;j<partInWindow.size();j++) {
-                    if(!NewPartInWindow.contains(partInWindow.get(j))){
-                        lst.add(partInWindow.get(j));
-                    }
-                }
-                if(NewPartInWindow.isEmpty()){
-                    lst.addAll(partInWindow);
-                }
-                else{lst.addAll(NewPartInWindow);}
-                NewPartInWindow = ChangeType.sortTimes(lst);
-                window = new WorkWindow("forDate",note,NewPartInWindow);
-                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
-                refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
-                refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
-                if(!partInWindow.isEmpty()) {
-                    String b = partInWindow.get(0);
-                    String e = partInWindow.get(partInWindow.size() - 1);
-                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty " , Toast.LENGTH_SHORT).show();
-
-                }
-            }
-        });
-        mergD.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
-                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
-                Toast.makeText(WorkWeekDefinition.this, partInWindow.toString(), Toast.LENGTH_SHORT).show();
-                window = new WorkWindow("forDate", note, partInWindow);
-                refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
-                if (!partInWindow.isEmpty()) {
-                    String b = partInWindow.get(0);
-                    String e = partInWindow.get(partInWindow.size() - 1);
-                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty ", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        AlertDialog add = mergD.create();
-        add.show();
-    }
+//    public void merD(){
+////      change window
+//        mergD = new AlertDialog.Builder(this);
+//        mergD.setMessage("want to merge window?");
+//        mergD.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                ArrayList<String> lst = new ArrayList<>();
+//                for(int j =0;j<partInWindow.size();j++) {
+//                    if(!NewPartInWindow.contains(partInWindow.get(j))){
+//                        lst.add(partInWindow.get(j));
+//                    }
+//                }
+//                if(NewPartInWindow.isEmpty()){
+//                    lst.addAll(partInWindow);
+//                }
+//                else{lst.addAll(NewPartInWindow);}
+//                NewPartInWindow = ChangeType.sortTimes(lst);
+//                window = new WorkWindow("forDate",note,NewPartInWindow);
+//                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
+//                refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
+//                refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
+//                if(!partInWindow.isEmpty()) {
+//                    String b = partInWindow.get(0);
+//                    String e = partInWindow.get(partInWindow.size() - 1);
+//                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
+//                }
+//                else {
+//                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty " , Toast.LENGTH_SHORT).show();
+//
+//                }
+//            }
+//        });
+//        mergD.setNegativeButton("No", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
+//                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
+//                Toast.makeText(WorkWeekDefinition.this, partInWindow.toString(), Toast.LENGTH_SHORT).show();
+//                window = new WorkWindow("forDate", note, partInWindow);
+//                refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
+//                if (!partInWindow.isEmpty()) {
+//                    String b = partInWindow.get(0);
+//                    String e = partInWindow.get(partInWindow.size() - 1);
+//                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
+//                } else {
+//                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty ", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//        AlertDialog add = mergD.create();
+//        add.show();
+//    }
 
 
     public void popTimePickerBeg(View view) {
@@ -430,30 +405,31 @@ public void defaultWindow(){
                 if(currentUser != null){
                     uid = currentUser.getUid();
                 }
-                DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
-                currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()){
-                            WorkWindow DBWindow = snapshot.getValue(WorkWindow.class);
-                            if (DBWindow != null) {
-                                NewPartInWindow = DBWindow.getPartInWindow();
-                                if(NewPartInWindow.isEmpty()){
-                                    begTime.setText("00:00");
-                                    endTime.setText("00:00");
-                                }
-                                else {
-                                    begTime.setText(NewPartInWindow.get(0));
-                                    endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
-                                }
-                            }
-                        }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                setHours();
+//                DatabaseReference currentACal = refActiveCalendar.child(uid).child(Sdate(date));
+//                currentACal.addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        if(snapshot.exists()){
+//                            WorkWindow DBWindow = snapshot.getValue(WorkWindow.class);
+//                            if (DBWindow != null) {
+//                                NewPartInWindow = DBWindow.getPartInWindow();
+//                                if(NewPartInWindow.isEmpty()){
+//                                    begTime.setText("00:00");
+//                                    endTime.setText("00:00");
+//                                }
+//                                else {
+//                                    begTime.setText(NewPartInWindow.get(0));
+//                                    endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
+//                                }
+//                            }
+//                        }
+//                    }
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//
+//                    }
+//                });
             }
         }, year, month, dayOfMonth);
 
@@ -477,13 +453,16 @@ public void defaultWindow(){
         if (id == R.id.mani_calnder) {
             Intent intent = new Intent(this,WeekViewActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.mani_main) {
             Intent intent= new Intent(this,MainActivityManicurist.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.ebusiness){
             Intent intent= new Intent(this,BusinessEditing.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.Mlogout){
             logoutAlert = new AlertDialog.Builder(this);
@@ -494,6 +473,7 @@ public void defaultWindow(){
                     mAuth.signOut();
                     Intent intent = new Intent(WorkWeekDefinition.this,Login.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             logoutAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {

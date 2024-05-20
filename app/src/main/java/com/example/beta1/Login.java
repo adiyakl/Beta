@@ -58,37 +58,65 @@ public class Login extends AppCompatActivity {
             Toast.makeText(Login.this, "please enter fileds<3", Toast.LENGTH_SHORT).show();
             return;
         }
+        if(!email1.contains("@")||!email1.contains(".com")){
+            Toast.makeText(Login.this,"email address must contain @ and .com<3", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(password1.length()<6){
+            Toast.makeText(Login.this,"password must be at list 6 characters", Toast.LENGTH_SHORT).show();
+            return;
+        }
         mAuth.signInWithEmailAndPassword(email1, password1)
                 .addOnCompleteListener(Login.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            final ProgressDialog pd = ProgressDialog.show(Login.this, "login", "connecting...", true);
                             SharedPreferences settings = getSharedPreferences("PREFS_NAME", MODE_PRIVATE);
                             SharedPreferences.Editor editor = settings.edit();
                             editor.putBoolean("stayConnect", stayco.isChecked());
                             editor.commit();
                             FirebaseUser currentUser = mAuth.getCurrentUser();
                             if (currentUser != null) {
-                                DBref.getUserUid(currentUser);
-                                user = DBref.user;
-                                if (user!=null) {
-                                    if (user.getmOrC().equals("M")) {
-                                        Intent intent = new Intent(Login.this, MainActivityManicurist.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else if (user.getmOrC().equals("C")) {
-                                        Intent intent = new Intent(Login.this, MainActivityClient.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                }
+                                goToMC(currentUser);
+                            }
+                            else {
+                                pd.dismiss();
                             }
                         } else {
-                            Toast.makeText(Login.this, "Login Failed, consider register...", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Login.this, "Login Failed, check your fields or consider register...", Toast.LENGTH_SHORT).show();
 
                         }
                     }
                 });
+    }
+    public void goToMC(FirebaseUser currentUser){
+        DBref.getUserUid(currentUser);
+        final ProgressDialog pd = ProgressDialog.show(Login.this, "Login", "Connecting...", true);
+        refUsers.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if(task.isSuccessful()){
+                    pd.dismiss();
+                    User user = task.getResult().getValue(User.class);
+                    DBref.user = user;
+                    if (user.getmOrC().equals("M")) {
+                        Intent si = new Intent(Login.this, MainActivityManicurist.class);
+                        startActivity(si);
+                        finish();
+
+                    } else if (user.getmOrC().equals("C")) {
+                        Intent si = new Intent(Login.this, MainActivityClient.class);
+                        startActivity(si);
+                        finish();
+                    } else {
+                        Toast.makeText(Login.this, user.getmOrC() ,Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            }
+        });
     }
 
 
@@ -98,33 +126,7 @@ public class Login extends AppCompatActivity {
                         Boolean isChecked = settings.getBoolean("stayConnect", false);
                         FirebaseUser currentUser = mAuth.getCurrentUser();
                         if (isChecked && currentUser != null) {
-                            DBref.getUserUid(currentUser);
-                            final ProgressDialog pd = ProgressDialog.show(Login.this, "Login", "Connecting...", true);
-                            refUsers.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>()
-                            {
-                                @Override
-                                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                                    if(task.isSuccessful()){
-                                        pd.dismiss();
-                                        User user = task.getResult().getValue(User.class);
-                                        if (user.getmOrC().equals("M")) {
-                                            Intent si = new Intent(Login.this, MainActivityManicurist.class);
-                                            si.putExtra("newuser", false);
-                                            startActivity(si);
-                                            finish();
-
-                                        } else if (user.getmOrC().equals("C")) {
-                                            Intent si = new Intent(Login.this, MainActivityClient.class);
-                                            si.putExtra("newuser", false);
-                                            startActivity(si);
-                                            finish();
-                                        } else {
-                                            Toast.makeText(Login.this, user.getmOrC() ,Toast.LENGTH_SHORT).show();
-
-                                        }
-                                    }
-                                }
-                            });
+                            goToMC(currentUser);
                     }}
 
                     protected void onPause() {

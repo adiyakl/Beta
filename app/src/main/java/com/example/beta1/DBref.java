@@ -17,7 +17,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class DBref {
     public static String uid;
-    public static User user = new User("","","","","","","");
+    public static User user ;
     public static FirebaseAuth mAuth = FirebaseAuth.getInstance();
     public static FirebaseDatabase FBDB = FirebaseDatabase.getInstance();
     public static DatabaseReference refUsers = FBDB.getReference("Users");
@@ -29,20 +29,22 @@ public class DBref {
     public static StorageReference refPic = FBST.getReference();
     public static void getUserUid(FirebaseUser fbUser){
         uid = "";
-        user = new User("","","","","","","");
     uid = fbUser.getUid();
     refUsers = FBDB.getReference("Users").child(uid);
-        getUser();
-    }
-    public static void getUser(){
-        refUsers.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if(task.isSuccessful()){
-                    user = task.getResult().getValue(User.class);
-                }
-            }
-        });
-    }
+
+          }
+          public static void setUser(User user1){
+            user = user1;
+          }
+//    public static void getUser(){
+//        refUsers.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+//            @Override
+//            public void onComplete(@NonNull Task<DataSnapshot> task) {
+//                if(task.isSuccessful()){
+//                    user = task.getResult().getValue(User.class);
+//                }
+//            }
+//        });
+//    }
 
 }

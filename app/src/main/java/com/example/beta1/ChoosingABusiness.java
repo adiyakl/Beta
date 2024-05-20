@@ -50,11 +50,10 @@ public class ChoosingABusiness extends AppCompatActivity {
     AlertDialog.Builder logoutAlert;
     private ArrayList<String> businessesList = new ArrayList<>();
     private ArrayList<Business> businesses = new ArrayList<>();
-    public static String businessName ="";
-    TextView busName,busServ,busAdres,busPhone,busMani, loadingIcon;
+    TextView busName,busServ,busAdres,busPhone,busMani;
     private Business b;
-    private User Muser;
     private User user = DBref.user;
+    private User Muser;
     private  String linkUid;
     Button bt;
 
@@ -94,7 +93,8 @@ public class ChoosingABusiness extends AppCompatActivity {
 
             public void setLinked1(){
                 user.setLinked(linkUid);
-                refUsers.setValue(user);
+                DBref.setUser(user);
+                refUsers.setValue(DBref.user);
                 Toast.makeText(ChoosingABusiness.this,"updated",Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(ChoosingABusiness.this,MainActivityClient.class);
                 startActivity(intent);
@@ -105,7 +105,6 @@ public class ChoosingABusiness extends AppCompatActivity {
                 busPhone.setText(b.getPhone());
                 busAdres.setText(b.getAdress());
                 busServ.setText(b.getServices());
-                refUsers = FBDB.getReference("Users");
                 DatabaseReference Muserref = refUsers.child(b.getUid());
                 Muserref.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                     @Override
@@ -169,9 +168,11 @@ public class ChoosingABusiness extends AppCompatActivity {
         if (id == R.id.client_calnder) {
             Intent intent = new Intent(ChoosingABusiness.this,CalendarClient.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.client_main) {
             Intent intent = new Intent(ChoosingABusiness.this,CalendarClient.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.Clogout){
             logoutAlert = new AlertDialog.Builder(this);
@@ -182,6 +183,7 @@ public class ChoosingABusiness extends AppCompatActivity {
                     mAuth.signOut();
                     Intent intent = new Intent(ChoosingABusiness.this,Login.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             logoutAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {

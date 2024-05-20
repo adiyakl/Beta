@@ -168,13 +168,16 @@ public class MainActivityManicurist extends AppCompatActivity {
         if (id == R.id.mani_calnder) {
             Intent intent = new Intent(this,WeekViewActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.ebusiness) {
             Intent intent= new Intent(MainActivityManicurist.this,BusinessEditing.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.week_def){
             Intent intent= new Intent(this,WorkWeekDefinition.class);
             startActivity(intent);
+            finish();
         }
         else if(id==R.id.Mlogout){
             logoutAlert = new AlertDialog.Builder(this);
@@ -187,6 +190,7 @@ public class MainActivityManicurist extends AppCompatActivity {
                     DBref.user = null;
                     Intent intent = new Intent(MainActivityManicurist.this,Login.class);
                     startActivity(intent);
+                    finish();
                 }
             });
             logoutAlert.setNegativeButton("No", new DialogInterface.OnClickListener() {
