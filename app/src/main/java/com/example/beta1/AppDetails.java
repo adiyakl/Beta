@@ -1,14 +1,13 @@
 package com.example.beta1;
 
+import static com.example.beta1.CalendarUtils.Odate;
+import static com.example.beta1.CalendarUtils.Sdate;
 import static com.example.beta1.CalendarUtils.selectedDate;
-import static com.example.beta1.ChangeType.Odate;
-import static com.example.beta1.ChangeType.Sdate;
+
 import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refPic;
-import static com.example.beta1.DBref.refUsers;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -17,12 +16,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;

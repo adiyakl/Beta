@@ -3,23 +3,18 @@ package com.example.beta1;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 
 public class CalendarUtils {
     public static LocalDate selectedDate;
-    public static ArrayList<String> hours = new ArrayList<>();
-    public static ArrayList<String> DefaultHours = new ArrayList<>(Arrays.asList("sorry we don't work today"));
-
     //    returns string representing the month and year.
     public static String monthYearFromDate(LocalDate data) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM yyyy");
         return data.format(formatter);
     }
-
-
-
 
     //    Creates a list of LocalDate objects for each day in the week of the provided date.
     public static ArrayList<LocalDate> daysInWeekArray(LocalDate selectedDate) {
@@ -32,7 +27,6 @@ public class CalendarUtils {
         }
         return days;
     }
-
     private static LocalDate sundayforDate(LocalDate current) {
         LocalDate oneWeekAgo = current.minusWeeks(1);
 
@@ -47,5 +41,45 @@ public class CalendarUtils {
         return null;
     }
 
+    public static String Sdate (LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+        return date.format(formatter);
+    }
+    public static String Odate(String date){
+        StringBuilder str = new StringBuilder();
+        if(date.length()>=6) {
+            str.append(date.substring(4, 6));
+            str.append(".");
+            str.append(date.substring(2, 4));
+            str.append(".");
+            str.append(date.substring(0, 2));
+        }
+        return str.toString();
+    }
+
+    public static boolean isAfterOrToday(String sdate,LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+        LocalDate parsedDate = LocalDate.parse(sdate, formatter);
+        if(parsedDate.isAfter(date)|| parsedDate.isEqual(date)){
+            return true;
+        }
+        return false;
+    }
+    public static LocalDate Ddate(String sdate){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+        LocalDate parsedDate = LocalDate.parse(sdate, formatter);
+        return parsedDate;
+    }
+    public static LocalTime Ttime(String stime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        LocalTime parsedTime = LocalTime.parse(stime, formatter);
+        return parsedTime;
+    }
+
+    public static String STime (String date){
+
+        return date.substring(0,5);
+
+    }
 
 }

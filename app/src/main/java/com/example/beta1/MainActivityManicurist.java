@@ -1,12 +1,11 @@
 package com.example.beta1;
 
-import static com.example.beta1.CalendarUtils.selectedDate;
-import static com.example.beta1.ChangeType.STime;
-import static com.example.beta1.ChangeType.Sdate;
+
+import static com.example.beta1.CalendarUtils.Sdate;
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refActiveCalendar;
-import static com.example.beta1.DBref.refUsers;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -16,41 +15,35 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.icu.util.LocaleData;
+
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Locale;
+
 
 public class MainActivityManicurist extends AppCompatActivity {
 
-    TextView welcome, wind ;
-    String Sname;
+    private TextView welcome, wind ;
+    private String Sname;
     private User user = DBref.user;
     private WorkWindow window;
     private ListView l;
     private LocalDate date=LocalDate.now();
     private String uid =DBref.uid;
-    ArrayList<String> appo = new ArrayList<>(Arrays.asList("","","","",""));
+    private ArrayList<String> appo = new ArrayList<>(Arrays.asList("","","","",""));
     AlertDialog.Builder logoutAlert;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,18 +131,8 @@ public class MainActivityManicurist extends AppCompatActivity {
         editor.commit();
         Sname = user.getName();
         welcome.setText("hey "+Sname+" !");
-        l.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> arrayAdapter, View view, int i, long l) {
-                    Intent intent = new Intent(MainActivityManicurist.this, AppDetails.class);
-                    intent.putExtra("from", MainActivityManicurist.class);
-                    intent.putExtra("time", STime(appo.get(i)));
-                    intent.putExtra("windowKey", window.getwKey());
-                    startActivity(intent);
-                }
 
 
-        });
         }
 
 

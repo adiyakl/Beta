@@ -25,13 +25,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Register extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+     FirebaseAuth mAuth;
     TextView toLogin;
     CheckBox stayco;
     TextView manicurist;
     TextView client;
     String mOrC;
-    private User userdb;
+     User userdb;
     EditText eTname, eTphone, eTemail, eTpass;
     Button bt1;
     String email, password, name, phone;

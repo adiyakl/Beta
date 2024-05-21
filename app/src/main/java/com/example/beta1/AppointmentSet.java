@@ -1,11 +1,11 @@
 package com.example.beta1;
 
+import static com.example.beta1.CalendarUtils.Ddate;
+import static com.example.beta1.CalendarUtils.Odate;
+import static com.example.beta1.CalendarUtils.Sdate;
 import static com.example.beta1.CalendarUtils.selectedDate;
-import static com.example.beta1.ChangeType.Ddate;
-import static com.example.beta1.ChangeType.Odate;
-import static com.example.beta1.ChangeType.Sdate;
+
 import static com.example.beta1.DBref.refActiveAppointments;
-//import static com.example.beta1.MainActivityClient.Cuid;
 import static com.example.beta1.DBref.refPic;
 import static com.example.beta1.MainActivityClient.Muid;
 import static com.example.beta1.MainActivityClient.thisbusiness;
@@ -108,7 +108,7 @@ public class AppointmentSet extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
             localDate = Ddate(sdate);
-            Ttime =ChangeType.Ttime(time);
+            Ttime =CalendarUtils.Ttime(time);
             localDateTime = LocalDate.now().atTime(LocalTime.now().plusMinutes(1));
                  localDateTime = localDate.atTime(Ttime.minusMinutes(7));// 30 minus...
 

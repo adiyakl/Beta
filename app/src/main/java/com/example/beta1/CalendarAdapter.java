@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
+;
 
 //purpose:
 //Serves as an adapter for populating calendar items in a RecyclerView.

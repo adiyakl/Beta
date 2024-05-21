@@ -36,11 +36,11 @@ import java.util.ArrayList;
 public class BusinessEditing extends AppCompatActivity {
     private EditText ename,eadress,ephone,eservices;
     private Switch sactive;
-    String name, adress, phone,active, services;
-    Button update;
+    private String name, adress, phone,active, services;
+    private Button update;
     private String uid = DBref.uid;
-    Business business;
-    AlertDialog.Builder logoutAlert;
+    private Business business;
+    private AlertDialog.Builder logoutAlert;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

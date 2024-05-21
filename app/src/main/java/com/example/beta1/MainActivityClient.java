@@ -1,12 +1,12 @@
 package com.example.beta1;
 
-import static com.example.beta1.ChangeType.Odate;
-import static com.example.beta1.ChangeType.Sdate;
-import static com.example.beta1.ChangeType.isAfterOrToday;
+
+import static com.example.beta1.CalendarUtils.Odate;
+import static com.example.beta1.CalendarUtils.Sdate;
+import static com.example.beta1.CalendarUtils.isAfterOrToday;
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refActiveBusiness;
-import static com.example.beta1.DBref.refUsers;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,11 +35,11 @@ import java.time.LocalDate;
 
 public class MainActivityClient extends AppCompatActivity {
 
-    TextView welcome , todayDate, appInfo, appM,at;
-    String Sname;
+    private TextView welcome , todayDate, appInfo, appM,at;
+    private String Sname;
     private User user = DBref.user;
     private boolean found = false;
-    AlertDialog.Builder logoutAlert;
+    private AlertDialog.Builder logoutAlert;
     public static String Muid = "0", sdate,appDate="",appTime="",appMani ="";
     private LocalDate date=LocalDate.now();
     public static Business thisbusiness = new Business();
@@ -63,7 +62,6 @@ public class MainActivityClient extends AppCompatActivity {
         sdate = Sdate(date);
         todayDate.setText(Odate(sdate));
         getApp();
-
 
     }
 

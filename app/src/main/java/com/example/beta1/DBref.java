@@ -36,15 +36,5 @@ public class DBref {
           public static void setUser(User user1){
             user = user1;
           }
-//    public static void getUser(){
-//        refUsers.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<DataSnapshot> task) {
-//                if(task.isSuccessful()){
-//                    user = task.getResult().getValue(User.class);
-//                }
-//            }
-//        });
-//    }
 
 }

@@ -1,11 +1,11 @@
 package com.example.beta1;
 
+import static com.example.beta1.CalendarUtils.STime;
+import static com.example.beta1.CalendarUtils.Sdate;
 import static com.example.beta1.CalendarUtils.daysInWeekArray;
 import static com.example.beta1.CalendarUtils.monthYearFromDate;
 import static com.example.beta1.CalendarUtils.selectedDate;
-import static com.example.beta1.ChangeType.FBtoString;
-import static com.example.beta1.ChangeType.STime;
-import static com.example.beta1.ChangeType.Sdate;
+
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveAppointments;
 import static com.example.beta1.DBref.refActiveCalendar;
@@ -30,21 +30,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 public class WeekViewActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private TextView monthYearText;
     AlertDialog.Builder logoutAlert;

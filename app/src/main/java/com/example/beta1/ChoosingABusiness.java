@@ -1,60 +1,47 @@
 package com.example.beta1;
 
-import static com.example.beta1.DBref.FBDB;
+
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveBusiness;
-import static com.example.beta1.DBref.refActiveCalendar;
 import static com.example.beta1.DBref.refUsers;
 
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
+
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+
 
 public class ChoosingABusiness extends AppCompatActivity {
-    ListView list;
-    AlertDialog.Builder logoutAlert;
+    private ListView list;
+    private AlertDialog.Builder logoutAlert;
     private ArrayList<String> businessesList = new ArrayList<>();
     private ArrayList<Business> businesses = new ArrayList<>();
-    TextView busName,busServ,busAdres,busPhone;
+    private TextView busName,busServ,busAdres,busPhone;
     private Business b;
     private User user = DBref.user;
     private  String linkUid;
-    Button bt;
+    private Button bt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

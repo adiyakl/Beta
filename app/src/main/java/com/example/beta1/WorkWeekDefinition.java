@@ -1,13 +1,10 @@
 package com.example.beta1;
 
-import static com.example.beta1.CalendarUtils.DefaultHours;
-import static com.example.beta1.CalendarUtils.selectedDate;
-import static com.example.beta1.ChangeType.Sdate;
+
+import static com.example.beta1.CalendarUtils.Sdate;
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveAppointments;
-import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
-import static com.example.beta1.DBref.refPic;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -54,21 +51,21 @@ import java.util.Arrays;
 import java.util.Locale;
 
 public class WorkWeekDefinition extends AppCompatActivity {
-    AlertDialog.Builder logoutAlert , delWAlert , mergD;
-    TextView dayAndDate;
-    EditText noteToClient;
-    CheckBox cb;
-    Button begTime, endTime;
-    String SbegTime , SendTime , sdate;
+    private AlertDialog.Builder logoutAlert , delWAlert , mergD;
+    private TextView dayAndDate;
+    private EditText noteToClient;
+    private CheckBox cb;
+    private Button begTime, endTime;
+    private String SbegTime , SendTime , sdate;
     private String uid =DBref.uid;
     private ArrayList<String> partInWindow = new ArrayList<>();
     private ArrayList<String> NewPartInWindow= new ArrayList<>();
     private WorkWindow window = new WorkWindow("","",new ArrayList<>());
     private String note =" ";
     private int size = 0;
-    int hour, minute;
-    LocalDate date = LocalDate.now();
-    DayOfWeek day;
+    private int hour, minute;
+    private LocalDate date = LocalDate.now();
+    private DayOfWeek day;
 
 
     @Override

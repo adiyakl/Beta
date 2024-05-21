@@ -1,18 +1,15 @@
 package com.example.beta1;
 
+import static com.example.beta1.CalendarUtils.Sdate;
 import static com.example.beta1.CalendarUtils.daysInWeekArray;
 import static com.example.beta1.CalendarUtils.monthYearFromDate;
 import static com.example.beta1.CalendarUtils.selectedDate;
-import static com.example.beta1.ChangeType.Sdate;
 import static com.example.beta1.DBref.mAuth;
 import static com.example.beta1.DBref.refActiveAppointments;
-import static com.example.beta1.DBref.refActiveBusiness;
 import static com.example.beta1.DBref.refActiveCalendar;
-import static com.example.beta1.DBref.refUsers;
 import static com.example.beta1.MainActivityClient.thisbusiness;
 
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
