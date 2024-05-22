@@ -32,22 +32,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-public class WeekViewActivity extends AppCompatActivity implements CalendarAdapter.OnItemListener {
+public class CalendarManicurist extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private TextView monthYearText;
-    AlertDialog.Builder logoutAlert;
+    private AlertDialog.Builder logoutAlert;
     private String uid = "0";
     private RecyclerView calendarRecyclerView;
     private ListView l;
-    private FirebaseUser currentUser = mAuth.getCurrentUser();
     public ArrayList<String> hours = new ArrayList<>();
-    Button bt1, bt2;
-    TextView note;
+    private Button bt1, bt2;
+    private TextView note;
     private String snote = "no notes at the moment";
     private String windowKey = "0";
     @Override
@@ -81,14 +79,13 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
             @Override
             public void onItemClick(AdapterView<?> arrayAdapter, View view, int i, long l) {
                 if(hours.get(i).length()>5) {
-                    Intent intent = new Intent(WeekViewActivity.this, AppDetails.class);
-                    intent.putExtra("from", WeekViewActivity.class);
+                    Intent intent = new Intent(CalendarManicurist.this, AppDetails.class);
                     intent.putExtra("time", STime(hours.get(i)));
                     intent.putExtra("windowKey", windowKey);
                     startActivity(intent);
                 }
                 else {
-                    Toast.makeText(WeekViewActivity.this,"no appointment at this time",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CalendarManicurist.this,"no appointment at this time",Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -112,10 +109,8 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                     }
 
                 }
-                if(!task.getResult().exists()) {
-                    Toast.makeText(WeekViewActivity.this,"no appointments here",Toast.LENGTH_SHORT).show();
-                }
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(WeekViewActivity.this, android.R.layout.simple_list_item_1, hours);
+
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(CalendarManicurist.this, android.R.layout.simple_list_item_1, hours);
                 l.setAdapter(arrayAdapter);
             }
         });
@@ -148,7 +143,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                     }
                         hours = DBWindow.getPartInWindow();
                         windowKey = DBWindow.getwKey();
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(WeekViewActivity.this, android.R.layout.simple_list_item_1, hours);
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(CalendarManicurist.this, android.R.layout.simple_list_item_1, hours);
                         l.setAdapter(arrayAdapter);
                         setList();
                     }
@@ -166,7 +161,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                                     }
                                     hours = DBWindow.getPartInWindow();
                                     windowKey = DBWindow.getwKey();
-                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(WeekViewActivity.this, android.R.layout.simple_list_item_1, hours);
+                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(CalendarManicurist.this, android.R.layout.simple_list_item_1, hours);
                                     l.setAdapter(arrayAdapter);
                                     setList();
                                 }
@@ -222,7 +217,7 @@ public class WeekViewActivity extends AppCompatActivity implements CalendarAdapt
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     mAuth.signOut();
-                    Intent intent = new Intent(WeekViewActivity.this,Login.class);
+                    Intent intent = new Intent(CalendarManicurist.this,Login.class);
                     startActivity(intent);
                 }
             });

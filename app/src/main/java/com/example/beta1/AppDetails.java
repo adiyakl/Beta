@@ -33,7 +33,7 @@ import java.io.IOException;
 
 public class AppDetails extends AppCompatActivity {
     private String uid = DBref.uid;
-    private String Cuid = "0";
+    private String Cuid;
     private String time, wwkey,sdate;
     private StorageReference refIm;
     private File localFile;

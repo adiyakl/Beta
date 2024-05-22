@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
 
-    tools:context=".WeekViewActivity">
+    tools:context=".CalendarManicurist">
 
 
     <LinearLayout
@@ -37,7 +37,6 @@
             android:id="@+id/monthYear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="goToMonth"
             android:text="Apr 2024"
             android:textColor="@color/black"
             android:textSize="32sp"

@@ -185,6 +185,10 @@ public void defaultWindow(){
             Toast.makeText(WorkWeekDefinition.this,"please enter fileds",Toast.LENGTH_SHORT).show();
             return;
         }
+        if (SbegTime.equals("sorry we don't work today")){
+            begTime.setText("HH:mm");
+            endTime.setText("HH:mm");
+        }
         size = 0;
         if(SendTime.equals("00:00")){
             SendTime = "23:00";
@@ -425,7 +429,7 @@ public void defaultWindow(){
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.mani_calnder) {
-            Intent intent = new Intent(this,WeekViewActivity.class);
+            Intent intent = new Intent(this,CalendarManicurist.class);
             startActivity(intent);
             finish();
         } else if (id == R.id.mani_main) {

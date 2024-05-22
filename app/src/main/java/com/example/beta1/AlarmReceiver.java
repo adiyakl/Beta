@@ -16,8 +16,6 @@ public class AlarmReceiver extends BroadcastReceiver {
     private static final String CHANNEL_NAME = "Your_Channel_Name";
     private static final int NOTIFICATION_ID = 1;
     public void onReceive(Context context, Intent ri) {
-        String msg = ri.getStringExtra("msg");
-        Toast.makeText(context, msg+" Alarm has been activated !", Toast.LENGTH_LONG).show();
         String text = "don't forget about your appointment!";
         showNotification(context, text);
     }

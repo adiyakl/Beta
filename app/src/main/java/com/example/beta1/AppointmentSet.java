@@ -52,15 +52,14 @@ import java.time.ZoneId;
 import java.util.Calendar;
 
 public class AppointmentSet extends AppCompatActivity {
-    TextView dateAndDay, bName;
-    EditText req;
+    private TextView dateAndDay, bName;
+    private EditText req;
     private String sdate = " ";
     private String time = " ";
-    private String Bname = thisbusiness.getName();
     private ImageView iv;
     private String CorG;
-    CheckBox cb;
-    private String imageUri, notes, wwKey, date;
+    private CheckBox cb;
+    private String  notes, wwKey, date;
     private String currentPath;
     private StorageReference refSto;
     private static Uri file;
@@ -70,7 +69,6 @@ public class AppointmentSet extends AppCompatActivity {
     private AlarmManager alarmMgr;
     private PendingIntent alarmIntent;
     private int ALARM_RQST_CODE=0;
-    private Calendar calSet;
 
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;//id the permission

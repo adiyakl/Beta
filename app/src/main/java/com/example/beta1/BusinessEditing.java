@@ -147,7 +147,9 @@ public class BusinessEditing extends AppCompatActivity {
                     });
                 }
                 Toast.makeText(BusinessEditing.this,"your business informtion has been updated!",Toast.LENGTH_SHORT).show();
-
+                Intent intent= new Intent(BusinessEditing.this,MainActivityManicurist.class);
+                startActivity(intent);
+                finish();
             }
         });
         showData();
@@ -208,7 +210,7 @@ public class BusinessEditing extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.mani_calnder) {
-            Intent intent = new Intent(this,WeekViewActivity.class);
+            Intent intent = new Intent(this,CalendarManicurist.class);
             startActivity(intent);
             finish();
         } else if (id == R.id.mani_main) {

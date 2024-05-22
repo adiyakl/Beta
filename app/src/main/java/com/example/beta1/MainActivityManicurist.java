@@ -82,8 +82,13 @@ public class MainActivityManicurist extends AppCompatActivity {
                         public void onComplete(@NonNull Task<DataSnapshot> task) {
                             if (task.isSuccessful()) {
                                  window = task.getResult().getValue(WorkWindow.class);
-                                String txt= "your working window for today: "+window.partInWindow.get(0)+"- "+window.partInWindow.get(window.partInWindow.size()-1);
-                                wind.setText(txt);
+
+                                     wind.setText("your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size() - 1));
+                                 }
+
+                            else {
+                                wind.setText("your working window is set to be default, go to edit it!");
+
                             }
                         }
                     });
@@ -149,7 +154,7 @@ public class MainActivityManicurist extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.mani_calnder) {
-            Intent intent = new Intent(this,WeekViewActivity.class);
+            Intent intent = new Intent(this,CalendarManicurist.class);
             startActivity(intent);
             finish();
         } else if (id == R.id.ebusiness) {

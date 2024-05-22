@@ -41,7 +41,7 @@
             android:name=".AppointmentSet"
             android:exported="false" />
         <activity
-            android:name=".WeekViewActivity"
+            android:name=".CalendarManicurist"
             android:exported="false" />
         <activity
             android:name=".WorkWeekDefinition"
