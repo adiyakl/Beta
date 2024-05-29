@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 ;
 
-//purpose:
 //Serves as an adapter for populating calendar items in a RecyclerView.
 //Inflates the layout for each calendar item and binds data to them.
 public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
@@ -34,11 +33,8 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
     @NonNull
     @Override
     public CalendarViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Create a LayoutInflater from the parent's context to inflate views.
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        // Inflate the 'calender_cell.xml' layout file into a View object without attaching to the parent.
         View view = inflater.inflate(R.layout.calendar_cell, parent, false);
-        // Access the view's current layout parameters.
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
 
         if (days.size()<=15){ // week view
@@ -63,12 +59,9 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarViewHolder> {
                 holder.parentView.setBackgroundColor(Color.parseColor("#F3D0D7"));
 
         }
-        //This method ensures that each calendar cell displays the correct day number as you scroll through RecyclerView.
-        // indicates the position of the item within the dataset (daysOfMonth ArrayList) that needs to be bound to the corresponding view holder.
     }
 
 
-    //    Returns the total number of items in the days list.
     @Override
     public int getItemCount() {
         return days.size();

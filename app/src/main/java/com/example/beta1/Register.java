@@ -114,20 +114,17 @@ public class Register extends AppCompatActivity {
     }
 
     public void goToLogin(View view){
-        Intent intent = new Intent(Register.this, Login.class);
-        startActivity(intent);
+       finish();
     }
 
     public void clientSel(View view){
         mOrC = "C";
-        Toast.makeText(Register.this,mOrC, Toast.LENGTH_SHORT).show();
         client.setBackgroundColor(Color.parseColor("#FFEFEF"));
         manicurist.setBackgroundColor(Color.parseColor("#F6F5F2"));
      }
 
     public void manicuristSel(View view) {
         mOrC = "M";
-        Toast.makeText(Register.this,mOrC, Toast.LENGTH_SHORT).show();
         client.setBackgroundColor(Color.parseColor("#F6F5F2"));
         manicurist.setBackgroundColor(Color.parseColor("#FFEFEF"));
     }

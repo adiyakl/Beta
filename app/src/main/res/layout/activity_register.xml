@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:gravity="center|fill_vertical"
-    android:onClick="goToLogin"
     android:orientation="vertical"
     android:padding="10dp"
     tools:context=".Register">

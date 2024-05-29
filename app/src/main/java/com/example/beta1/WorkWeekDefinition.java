@@ -51,7 +51,7 @@ import java.util.Arrays;
 import java.util.Locale;
 
 public class WorkWeekDefinition extends AppCompatActivity {
-    private AlertDialog.Builder logoutAlert , delWAlert , mergD;
+    private AlertDialog.Builder logoutAlert , delWAlert;
     private TextView dayAndDate;
     private EditText noteToClient;
     private CheckBox cb;
@@ -302,61 +302,6 @@ public void defaultWindow(){
         AlertDialog add = delWAlert.create();
         add.show();
     }
-
-//    public void merD(){
-////      change window
-//        mergD = new AlertDialog.Builder(this);
-//        mergD.setMessage("want to merge window?");
-//        mergD.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                ArrayList<String> lst = new ArrayList<>();
-//                for(int j =0;j<partInWindow.size();j++) {
-//                    if(!NewPartInWindow.contains(partInWindow.get(j))){
-//                        lst.add(partInWindow.get(j));
-//                    }
-//                }
-//                if(NewPartInWindow.isEmpty()){
-//                    lst.addAll(partInWindow);
-//                }
-//                else{lst.addAll(NewPartInWindow);}
-//                NewPartInWindow = ChangeType.sortTimes(lst);
-//                window = new WorkWindow("forDate",note,NewPartInWindow);
-//                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
-//                refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
-//                refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
-//                if(!partInWindow.isEmpty()) {
-//                    String b = partInWindow.get(0);
-//                    String e = partInWindow.get(partInWindow.size() - 1);
-//                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
-//                }
-//                else {
-//                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty " , Toast.LENGTH_SHORT).show();
-//
-//                }
-//            }
-//        });
-//        mergD.setNegativeButton("No", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
-//                refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
-//                Toast.makeText(WorkWeekDefinition.this, partInWindow.toString(), Toast.LENGTH_SHORT).show();
-//                window = new WorkWindow("forDate", note, partInWindow);
-//                refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
-//                if (!partInWindow.isEmpty()) {
-//                    String b = partInWindow.get(0);
-//                    String e = partInWindow.get(partInWindow.size() - 1);
-//                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to: " + b + "-" + e, Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(WorkWeekDefinition.this, "your window has been set to be empty ", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//        AlertDialog add = mergD.create();
-//        add.show();
-//    }
-
 
     public void popTimePickerBeg(View view) {
         TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {

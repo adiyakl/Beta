@@ -82,13 +82,19 @@ public class MainActivityManicurist extends AppCompatActivity {
                         public void onComplete(@NonNull Task<DataSnapshot> task) {
                             if (task.isSuccessful()) {
                                  window = task.getResult().getValue(WorkWindow.class);
-
-                                     wind.setText("your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size() - 1));
+                                 if(window!=null) {
+                                     if (window.getPartInWindow().contains("sorry we don't work today")) {
+                                         wind.setText("your working window is set to be default, go to edit it!");
+                                     }
+                                 }
+                                 else {
+                                     wind.setText("your working window is set to be default, go to edit it!");
                                  }
 
-                            else {
-                                wind.setText("your working window is set to be default, go to edit it!");
 
+                            }
+                            else {
+                                wind.setText("your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size() - 1));
                             }
                         }
                     });
@@ -111,15 +117,16 @@ public class MainActivityManicurist extends AppCompatActivity {
                             Appointment app = s.getValue(Appointment.class);
                             appo.add(app.getTime()+":  "+app.getName());
                         }
-                    }
 
+                    }
+                    if(appo.isEmpty()){
+                        appo.add("no appointments for today");
+                    }
                 }
                 if(!task.getResult().exists()) {
                     pd.dismiss();
                 }
-                if(appo.isEmpty()){
-                    appo.add("no appointments for today");
-                }
+
                 pd.dismiss();
                 ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(MainActivityManicurist.this, android.R.layout.simple_list_item_1, appo);                 l.setAdapter(arrayAdapter);
 

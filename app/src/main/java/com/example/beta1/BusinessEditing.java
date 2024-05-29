@@ -147,9 +147,6 @@ public class BusinessEditing extends AppCompatActivity {
                     });
                 }
                 Toast.makeText(BusinessEditing.this,"your business informtion has been updated!",Toast.LENGTH_SHORT).show();
-                Intent intent= new Intent(BusinessEditing.this,MainActivityManicurist.class);
-                startActivity(intent);
-                finish();
             }
         });
         showData();

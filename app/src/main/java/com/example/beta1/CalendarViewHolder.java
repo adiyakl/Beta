@@ -8,9 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-//class purpose:
-//	Represents a single item view within a RecyclerView for displaying calendar dates.
-//	Handles click events on the item view.
+
 public class CalendarViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
     public  final View parentView;
     private final ArrayList<LocalDate> days;
