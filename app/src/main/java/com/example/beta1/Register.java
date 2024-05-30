@@ -77,18 +77,18 @@ public class Register extends AppCompatActivity {
 
         if(phone.length()<10){
             Toast.makeText(Register.this, "phone number must be at list 10 characters",Toast.LENGTH_SHORT).show();
+            return;
         }
         SharedPreferences settings=getSharedPreferences("PREFS_NAME",MODE_PRIVATE);
         SharedPreferences.Editor editor=settings.edit();
         editor.putBoolean("stayConnect",stayco.isChecked());
         editor.commit();
-
+        final ProgressDialog pd = ProgressDialog.show(Register.this, "Registering", "Connecting...", true);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            final ProgressDialog pd = ProgressDialog.show(Register.this, "Registering", "Connecting...", true);
                             FirebaseUser user = mAuth.getCurrentUser();
                             DBref.getUserUid(user);
                             userdb=new User(name,email,phone,DBref.uid,mOrC,password,"");
@@ -108,6 +108,7 @@ public class Register extends AppCompatActivity {
                             finish();
                         } else {
                             Toast.makeText(Register.this, "please check your fields", Toast.LENGTH_SHORT).show();
+                            pd.dismiss();
                         }
 
                     }               });

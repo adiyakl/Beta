@@ -84,7 +84,7 @@ public class MainActivityManicurist extends AppCompatActivity {
                                  window = task.getResult().getValue(WorkWindow.class);
                                  if(window!=null) {
                                      if (window.getPartInWindow().contains("sorry we don't work today")) {
-                                         wind.setText("your working window is set to be default, go to edit it!");
+                                         wind.setText("your working window for today is: " + window.partInWindow.get(0) + " its the default, you souled set a new one:)");
                                      }
                                  }
                                  else {
@@ -124,6 +124,7 @@ public class MainActivityManicurist extends AppCompatActivity {
                     }
                 }
                 if(!task.getResult().exists()) {
+                    appo.add("no appointments for today");
                     pd.dismiss();
                 }
 

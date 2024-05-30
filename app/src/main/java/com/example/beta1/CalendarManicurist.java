@@ -37,13 +37,15 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 public class CalendarManicurist extends AppCompatActivity implements CalendarAdapter.OnItemListener {
     private TextView monthYearText;
     private AlertDialog.Builder logoutAlert;
     private String uid = "0";
     private RecyclerView calendarRecyclerView;
     private ListView l;
-    public ArrayList<String> hours = new ArrayList<>();
+    public ArrayList<String> hours = new ArrayList<>(Arrays.asList("sorry we don't work today"));
     private Button bt1, bt2;
     private TextView note;
     private String snote = "no notes at the moment";

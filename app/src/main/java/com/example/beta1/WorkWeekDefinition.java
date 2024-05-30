@@ -118,7 +118,9 @@ public class WorkWeekDefinition extends AppCompatActivity {
                                     endTime.setText("00:00");
                                     pd.dismiss();
 
-                                } else {
+                                }
+
+                                else {
                                     begTime.setText(NewPartInWindow.get(0));
                                     endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
                                     pd.dismiss();
@@ -137,7 +139,12 @@ public class WorkWeekDefinition extends AppCompatActivity {
                                 if (NewPartInWindow.isEmpty()) {
                                     begTime.setText("00:00");
                                     endTime.setText("00:00");
-                                } else {
+                                }
+                                if (NewPartInWindow.contains("sorry we don't work today")){
+                                    begTime.setText("HH:mm");
+                                    endTime.setText("HH:mm");
+                                }
+                                else {
                                     begTime.setText(NewPartInWindow.get(0));
                                     endTime.setText(NewPartInWindow.get(NewPartInWindow.size() - 1));
                                 }
@@ -169,7 +176,7 @@ public void defaultWindow(){
     ArrayList<String> partInWindowDefault = new ArrayList<>(Arrays.asList("sorry we don't work today"));
     window = new WorkWindow("DefaultWindow","default",partInWindowDefault);
     refActiveCalendar.child(uid).child("DefaultWindow").setValue(window);
-    Toast.makeText(this,"your system default: sorry we don't work today",Toast.LENGTH_SHORT).show();
+    Toast.makeText(this,"your system default: no working window",Toast.LENGTH_SHORT).show();
 
 }
 
@@ -181,7 +188,7 @@ public void defaultWindow(){
         note = String.valueOf(noteToClient.getText());
         SbegTime =(String) begTime.getText();
         SendTime = (String) endTime.getText();
-        if(SbegTime.equals("hh:mm")||SendTime.equals("hh:mm")){
+            if(SbegTime.equals("HH:mm")||SendTime.equals("HH:mm")){
             Toast.makeText(WorkWeekDefinition.this,"please enter fileds",Toast.LENGTH_SHORT).show();
             return;
         }

@@ -108,7 +108,7 @@ public class AppointmentSet extends AppCompatActivity {
             localDate = Ddate(sdate);
             Ttime =CalendarUtils.Ttime(time);
             localDateTime = LocalDate.now().atTime(LocalTime.now().plusMinutes(1));
-                 localDateTime = localDate.atTime(Ttime.minusMinutes(7));// 30 minus...
+//                 localDateTime = localDate.atTime(Ttime.minusMinutes(30));// 30 minus...
 
             }
         });
@@ -124,7 +124,7 @@ public class AppointmentSet extends AppCompatActivity {
             long alarmTimeMillis = localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
 //             Set the alarm
             alarmMgr.set(AlarmManager.RTC_WAKEUP, alarmTimeMillis, alarmIntent);
-        Toast.makeText(AppointmentSet.this,String.valueOf(ALARM_RQST_CODE) + " Alarm in " + String.valueOf(localDateTime.getHour())+"at "+ String.valueOf(localDateTime.getMinute()),Toast.LENGTH_LONG).show();
+//        Toast.makeText(AppointmentSet.this,String.valueOf(ALARM_RQST_CODE) + " Alarm in " + String.valueOf(localDateTime.getHour())+"at "+ String.valueOf(localDateTime.getMinute()),Toast.LENGTH_LONG).show();
         }
         if (CorG!=null) {
             if (CorG.equals("G")) {
