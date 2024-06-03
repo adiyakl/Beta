@@ -50,6 +50,7 @@ public class Register extends AppCompatActivity {
          stayco = findViewById(R.id.checkBox);
          mAuth = FirebaseAuth.getInstance();
          mOrC = "C";
+         client.setTextColor(Color.BLACK);
          client.setBackgroundColor(Color.parseColor("#FFEFEF"));
 
 
@@ -120,12 +121,16 @@ public class Register extends AppCompatActivity {
 
     public void clientSel(View view){
         mOrC = "C";
+        client.setTextColor(Color.BLACK);
+        manicurist.setTextColor(Color.parseColor("#686D76"));
         client.setBackgroundColor(Color.parseColor("#FFEFEF"));
         manicurist.setBackgroundColor(Color.parseColor("#F6F5F2"));
      }
 
     public void manicuristSel(View view) {
         mOrC = "M";
+        manicurist.setTextColor(Color.BLACK);
+        client.setTextColor(Color.parseColor("#686D76"));
         client.setBackgroundColor(Color.parseColor("#F6F5F2"));
         manicurist.setBackgroundColor(Color.parseColor("#FFEFEF"));
     }

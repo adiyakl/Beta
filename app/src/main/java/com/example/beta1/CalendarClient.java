@@ -1,5 +1,6 @@
 package com.example.beta1;
 
+import static com.example.beta1.CalendarUtils.Ddate;
 import static com.example.beta1.CalendarUtils.Sdate;
 import static com.example.beta1.CalendarUtils.daysInWeekArray;
 import static com.example.beta1.CalendarUtils.monthYearFromDate;
@@ -35,6 +36,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 
@@ -126,17 +129,24 @@ public class CalendarClient extends AppCompatActivity implements CalendarAdapter
 
     public void setAp(LocalDate date, String hour, int index) {
         String sdate = Sdate(date);
-        // check double booked
-        if (!hour.equals("taken")) {
-            Intent intent = new Intent(CalendarClient.this, AppointmentSet.class);
-            intent.putExtra("date",sdate);
-            intent.putExtra("hour",hour);
-            intent.putExtra("windowKey",windowKey);
-            startActivity(intent);
+        LocalTime Ttime =CalendarUtils.Ttime(hour);
+        LocalDateTime dt = date.atTime(Ttime);
+        if(dt.isBefore(LocalDateTime.now())){
+            Toast.makeText(CalendarClient.this,"this date and time alreay passed",Toast.LENGTH_SHORT).show();
+        }
+        else {
+            // check double booked
+            if (!hour.equals("taken")) {
+                Intent intent = new Intent(CalendarClient.this, AppointmentSet.class);
+                intent.putExtra("date", sdate);
+                intent.putExtra("hour", hour);
+                intent.putExtra("windowKey", windowKey);
+                startActivity(intent);
 //            refActiveAppointments.child(Muid).child(sdate).child(windowKey).child(hour).setValue(app);
-            setWeekView();
-        } else {
-            Toast.makeText(CalendarClient.this, "this hour is unavailable", Toast.LENGTH_SHORT).show();
+                setWeekView();
+            } else {
+                Toast.makeText(CalendarClient.this, "this hour is unavailable", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -38,6 +38,7 @@
             android:layout_weight="1"
             android:onClick="clientSel"
             android:text="client"
+            android:textColor="#686D76"
             android:textAlignment="center"
             android:textSize="34sp"
             android:textStyle="bold" />
@@ -105,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:hint="Password"
-                android:text=""
+                android:inputType="textPassword"
                 android:textAlignment="center"
                 android:textSize="34sp"
                 android:textStyle="bold" />
