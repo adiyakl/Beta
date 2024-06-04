@@ -253,7 +253,6 @@ public void defaultWindow(){
                 if (cb.isChecked()){
                     refActiveCalendar.child(uid).child(Sdate(date)).removeValue();
                     refActiveAppointments.child(uid).child(Sdate(date)).removeValue();
-                    Toast.makeText(WorkWeekDefinition.this, partInWindow.toString(), Toast.LENGTH_SHORT).show();
                     window = new WorkWindow("forDate", note, partInWindow);
                     refActiveCalendar.child(uid).child(Sdate(date)).setValue(window);
                     if (!partInWindow.isEmpty()) {
