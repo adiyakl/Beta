@@ -72,9 +72,10 @@ public class MainActivityManicurist extends AppCompatActivity {
                      if(!window.partInWindow.isEmpty()) {
                          String txt = "your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size()-1);
                          wind.setText(txt);
+                         pd.dismiss();
                      }
 
-                    pd.dismiss();
+                    
                 }
                 else {
                     refActiveCalendar.child(uid).child("DefaultWindow").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -85,18 +86,17 @@ public class MainActivityManicurist extends AppCompatActivity {
                                  if(window!=null) {
                                      if (window.getPartInWindow().contains("sorry we don't work today")) {
                                          wind.setText("your working window for today is: " + window.partInWindow.get(0) + " its the default, you souled set a new one:)");
+                                     } else {
+                                         wind.setText("your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size() - 1));
+
                                      }
                                  }
                                  else {
                                      wind.setText("your working window is set to be default, go to edit it!");
                                  }
-
-
                             }
-                            else {
-                                wind.setText("your working window for today: " + window.partInWindow.get(0) + "- " + window.partInWindow.get(window.partInWindow.size() - 1));
                             }
-                        }
+
                     });
                     pd.dismiss();
                 }
